@@ -1,0 +1,9 @@
+const dataBaseCryptoTableName = 'userCrypto';
+const sharedPrefFaceEnabledKey = 'faceIdEnabled';
+const createWalletURL =
+    'http://137.184.44.152:88/create_wallet?memornic_phrase=';
+const SESSION_COOKIE_NAME = 'PHPSESSID';
+const CSRF_TOKEN_HEADER_NAME = 'x-csrf-token';
+const USER_VERIFIED = 'userVerified';
+const PAYSTACK_PUBLIC_KEY = 'pk_test_6ad3b7e47f93deaf663702e3bb076875faee6361';
+const COMPANY_PHONE_NUMBER = '';
