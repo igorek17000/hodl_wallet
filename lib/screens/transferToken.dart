@@ -443,30 +443,6 @@ class _TransferTokenState extends State<TransferToken> {
                               (snapshot.data as Map)['userBalance'] <= 0
                           ? null
                           : () async {
-                              var pinEntered = await prompt(
-                                context,
-                                title: const Text('Your pin is required'),
-                                isSelectedInitialValue: false,
-                                textOK: const Text('Ok'),
-                                textCancel: const Text('Cancel'),
-                                hintText: 'Please enter your pin',
-                                validator: (String value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter your pin';
-                                  }
-                                  return null;
-                                },
-                                keyboardType: TextInputType.numberWithOptions(
-                                    decimal: true),
-                                autoFocus: true,
-                                obscureText: true,
-                                obscuringCharacter: '*',
-                                showPasswordIcon: true,
-                                barrierDismissible: true,
-                                textCapitalization: TextCapitalization.words,
-                                textAlign: TextAlign.center,
-                              );
-
                               var localAuth = LocalAuthentication();
                               bool didAuthenticate = false;
                               bool userEnteredPinCorrectly = false;
@@ -476,6 +452,32 @@ class _TransferTokenState extends State<TransferToken> {
                                     localizedReason:
                                         'Please authenticate to transfer token');
                               } else {
+                                var pinEntered = await prompt(
+                                  context,
+                                  title: const Text(
+                                      'Your pin is required to transfer token'),
+                                  isSelectedInitialValue: false,
+                                  textOK: const Text('Ok'),
+                                  textCancel: const Text('Cancel'),
+                                  hintText:
+                                      'Please enter your pin to transfer token',
+                                  validator: (String value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter your pin to transfer token';
+                                    }
+                                    return null;
+                                  },
+                                  keyboardType: TextInputType.numberWithOptions(
+                                      decimal: true),
+                                  autoFocus: true,
+                                  obscureText: true,
+                                  obscuringCharacter: '*',
+                                  showPasswordIcon: true,
+                                  barrierDismissible: true,
+                                  textCapitalization: TextCapitalization.words,
+                                  textAlign: TextAlign.center,
+                                );
+
                                 userEnteredPinCorrectly =
                                     pref.getString(userUnlockPasscodeKey) ==
                                         pinEntered.trim();

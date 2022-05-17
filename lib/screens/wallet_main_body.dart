@@ -1194,7 +1194,7 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                   Flexible(
                                     child: StreamBuilder(stream: () async* {
                                       while (true) {
-                                        yield (await getErc20TokenPrice(
+                                        yield (await getERC20TokenBalance(
                                             element));
                                         await Future.delayed(
                                             Duration(minutes: 1));

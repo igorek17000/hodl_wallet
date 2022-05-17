@@ -136,7 +136,7 @@ class _TokenState extends State<Token> {
                   StreamBuilder(stream: () async* {
                     while (true) {
                       if (widget.data['contractAddress'] != null) {
-                        yield (await getErc20TokenPrice(widget.data as Map));
+                        yield (await getERC20TokenBalance(widget.data as Map));
                         await Future.delayed(Duration(minutes: 1));
                         return;
                       } else if (widget.data['default'] != null) {
