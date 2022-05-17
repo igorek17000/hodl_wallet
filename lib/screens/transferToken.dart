@@ -9,6 +9,7 @@ import 'package:hex/hex.dart';
 import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:prompt_dialog/prompt_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:web3dart/web3dart.dart' as web3;
 import 'package:web3dart/web3dart.dart';
@@ -442,12 +443,45 @@ class _TransferTokenState extends State<TransferToken> {
                               (snapshot.data as Map)['userBalance'] <= 0
                           ? null
                           : () async {
-                              var localAuth = LocalAuthentication();
-                              bool didAuthenticate = await localAuth.authenticate(
-                                  localizedReason:
-                                      'Please authenticate to transfer token');
+                              var pinEntered = await prompt(
+                                context,
+                                title: const Text('Your pin is required'),
+                                isSelectedInitialValue: false,
+                                textOK: const Text('Ok'),
+                                textCancel: const Text('Cancel'),
+                                hintText: 'Please enter your pin',
+                                validator: (String value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter your pin';
+                                  }
+                                  return null;
+                                },
+                                keyboardType: TextInputType.numberWithOptions(
+                                    decimal: true),
+                                autoFocus: true,
+                                obscureText: true,
+                                obscuringCharacter: '*',
+                                showPasswordIcon: true,
+                                barrierDismissible: true,
+                                textCapitalization: TextCapitalization.words,
+                                textAlign: TextAlign.center,
+                              );
 
-                              if (didAuthenticate) {
+                              var localAuth = LocalAuthentication();
+                              bool didAuthenticate = false;
+                              bool userEnteredPinCorrectly = false;
+                              var pref = await SharedPreferences.getInstance();
+                              if (await authenticateIsAvailable()) {
+                                didAuthenticate = await localAuth.authenticate(
+                                    localizedReason:
+                                        'Please authenticate to transfer token');
+                              } else {
+                                userEnteredPinCorrectly =
+                                    pref.getString(userUnlockPasscodeKey) ==
+                                        pinEntered.trim();
+                              }
+
+                              if (didAuthenticate || userEnteredPinCorrectly) {
                                 if (isSending) return;
                                 setState(() {
                                   isSending = true;
@@ -998,6 +1032,9 @@ class _TransferTokenState extends State<TransferToken> {
                                             'Could not send Token, Check your available balance')));
                                   });
                                 }
+                              } else {
+                                _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                    content: Text('Authentication failed')));
                               }
                             },
                       child: Padding(

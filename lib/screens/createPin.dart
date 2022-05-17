@@ -52,6 +52,7 @@ class _enterPinState extends State<enterPin> {
                     height: 20,
                   ),
                   TextFormField(
+                    autofocus: true,
                     textAlign: TextAlign.center,
                     validator: (value) {
                       if (value?.trim() == '')

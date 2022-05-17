@@ -31,7 +31,7 @@ Future<bool> authenticateIsAvailable() async {
   return isAvailable && isDeviceSupported;
 }
 
-final purple = Color(0xff48229b);
+final appBackground = Color(0xff060c24);
 
 Map getBlockChains() {
   Map blockChains = {

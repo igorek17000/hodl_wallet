@@ -29,7 +29,7 @@ class _WalletState extends State<Wallet> {
   Widget build(BuildContext context) {
     return Scaffold(
         bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: purple,
+          backgroundColor: appBackground,
           currentIndex: currentIndex_,
           onTap: (index) {
             setState(() {
