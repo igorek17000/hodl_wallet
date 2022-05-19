@@ -1,23 +1,9 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:io';
 
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:cryptowallet/components/AppSignIn.dart';
-import 'package:cryptowallet/components/AppVerifyLogin.dart';
-import 'package:cryptowallet/screens/confirm_seed_phrase.dart';
 import 'package:cryptowallet/screens/createPin.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:flutter_background_service_android/flutter_background_service_android.dart';
-import 'package:http/http.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:web3dart/crypto.dart';
-import 'package:web3dart/web3dart.dart';
 
 import 'screens/main_screen.dart';
 
