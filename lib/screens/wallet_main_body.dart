@@ -457,8 +457,8 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                                                 'change']
                                                             .toString()
                                                             .startsWith('-')
-                                                        ? Color(0xffeb6a61)
-                                                        : Color(0xff01aa78)),
+                                                        ? red
+                                                        : green),
                                               )
                                             ],
                                           ),

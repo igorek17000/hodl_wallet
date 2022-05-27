@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
@@ -45,6 +46,12 @@ class _WalletConnectState extends State<WalletConnect> {
   void initState() {
     _initialize();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _wcClient.killSession();
+    super.dispose();
   }
 
   _initialize() async {
@@ -452,22 +459,18 @@ class _WalletConnectState extends State<WalletConnect> {
       ethereumTransaction: ethereumTransaction,
       title: 'Send Transaction',
       onConfirm: () async {
-        try {
-          final creds = EthPrivateKey.fromHex(privateKey);
-          final txhash = await _web3client.sendTransaction(
-            creds,
-            _wcEthTxToWeb3Tx(ethereumTransaction),
-            chainId: _wcClient.chainId,
-          );
-          debugPrint('txhash $txhash');
-          _wcClient.approveRequest<String>(
-            id: id,
-            result: txhash,
-          );
-        } catch (e) {
-        } finally {
-          Navigator.pop(context);
-        }
+        final creds = EthPrivateKey.fromHex(privateKey);
+        final txhash = await _web3client.sendTransaction(
+          creds,
+          _wcEthTxToWeb3Tx(ethereumTransaction),
+          chainId: _wcClient.chainId,
+        );
+        debugPrint('txhash $txhash');
+        _wcClient.approveRequest<String>(
+          id: id,
+          result: txhash,
+        );
+        Navigator.pop(context);
       },
       onReject: () {
         _wcClient.rejectRequest(id: id);
@@ -502,11 +505,6 @@ class _WalletConnectState extends State<WalletConnect> {
         debugPrint("isNotEmpty");
         contractFunction = maibiFunctions.first;
         debugPrint("function ${contractFunction.name}");
-        // contractFunction.parameters.forEach((element) {
-        //   debugPrint("params ${element.name} ${element.type.name}");
-        // });
-        // final params = dataBytes.sublist(4).toList();
-        // debugPrint("params $params ${params.length}");
       }
       if (gasPrice == BigInt.zero) {
         gasPrice = await _web3client.estimateGas();
@@ -514,6 +512,14 @@ class _WalletConnectState extends State<WalletConnect> {
     } catch (e, trace) {
       debugPrint("failed to decode\n$e\n$trace");
     }
+    var value = BigInt.parse(ethereumTransaction.value ?? '0').toDouble();
+    var gas = BigInt.parse(ethereumTransaction.gas ?? '0').toDouble();
+    var userBalance = (await _web3client
+            .getBalance(EthereumAddress.fromHex(ethereumTransaction.from)))
+        .getInWei
+        .toDouble();
+
+    var isEnoughBalance = userBalance > value + gas;
     showDialog(
       context: context,
       builder: (_) {
@@ -576,6 +582,29 @@ class _WalletConnectState extends State<WalletConnect> {
                   Expanded(
                     flex: 2,
                     child: Text(
+                      'Balance',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16.0,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      '${userBalance / pow(10, 18)} ${currencySymbol}',
+                      style: TextStyle(fontSize: 16.0),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.only(bottom: 8.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    flex: 2,
+                    child: Text(
                       'Transaction Fee',
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
@@ -615,6 +644,32 @@ class _WalletConnectState extends State<WalletConnect> {
                 ],
               ),
             ),
+            !isEnoughBalance
+                ? Padding(
+                    padding: const EdgeInsets.only(bottom: 8.0),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Text(
+                            'Insufficient Funds',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: red,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: Text(
+                            '',
+                            style: TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                      ],
+                    ),
+                  )
+                : Container(),
             if (contractFunction != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -659,31 +714,44 @@ class _WalletConnectState extends State<WalletConnect> {
                 ),
               ),
             ),
-            Row(
-              children: [
-                Expanded(
-                  child: TextButton(
+            isEnoughBalance
+                ? Row(
+                    children: [
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                          onPressed: onConfirm,
+                          child: Text('CONFIRM'),
+                        ),
+                      ),
+                      const SizedBox(width: 16.0),
+                      Expanded(
+                        child: TextButton(
+                          style: TextButton.styleFrom(
+                            primary: Colors.white,
+                            backgroundColor:
+                                Theme.of(context).colorScheme.secondary,
+                          ),
+                          onPressed: onReject,
+                          child: Text('REJECT'),
+                        ),
+                      ),
+                    ],
+                  )
+                : TextButton(
                     style: TextButton.styleFrom(
                       primary: Colors.white,
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                     ),
-                    onPressed: onConfirm,
-                    child: Text('CONFIRM'),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text('BACK'),
                   ),
-                ),
-                const SizedBox(width: 16.0),
-                Expanded(
-                  child: TextButton(
-                    style: TextButton.styleFrom(
-                      primary: Colors.white,
-                      backgroundColor: Theme.of(context).colorScheme.secondary,
-                    ),
-                    onPressed: onReject,
-                    child: Text('REJECT'),
-                  ),
-                ),
-              ],
-            ),
           ],
         );
       },
