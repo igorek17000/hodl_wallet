@@ -452,18 +452,22 @@ class _WalletConnectState extends State<WalletConnect> {
       ethereumTransaction: ethereumTransaction,
       title: 'Send Transaction',
       onConfirm: () async {
-        final creds = EthPrivateKey.fromHex(privateKey);
-        final txhash = await _web3client.sendTransaction(
-          creds,
-          _wcEthTxToWeb3Tx(ethereumTransaction),
-          chainId: _wcClient.chainId,
-        );
-        debugPrint('txhash $txhash');
-        _wcClient.approveRequest<String>(
-          id: id,
-          result: txhash,
-        );
-        Navigator.pop(context);
+        try {
+          final creds = EthPrivateKey.fromHex(privateKey);
+          final txhash = await _web3client.sendTransaction(
+            creds,
+            _wcEthTxToWeb3Tx(ethereumTransaction),
+            chainId: _wcClient.chainId,
+          );
+          debugPrint('txhash $txhash');
+          _wcClient.approveRequest<String>(
+            id: id,
+            result: txhash,
+          );
+        } catch (e) {
+        } finally {
+          Navigator.pop(context);
+        }
       },
       onReject: () {
         _wcClient.rejectRequest(id: id);
@@ -833,7 +837,7 @@ Widget _buildRow(String imageAsset, String name) {
     child: Column(
       children: <Widget>[
         SizedBox(height: 12),
-        Container(height: 2, color: Colors.deepPurple),
+        Container(height: 2, color: appBackground),
         SizedBox(height: 12),
         Row(
           children: <Widget>[
