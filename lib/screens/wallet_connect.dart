@@ -203,8 +203,8 @@ class _WalletConnectState extends State<WalletConnect> {
                 
                   <img src="data:image/png;base64,${widget.logoImageBase64}" style="width:150px"/>
                   <br>
-                  <span style="font-size:25px;">${walletAbbr} Wallet Connect</span>
-                  
+                  <span style="font-size:25px;">${walletAbbr} Wallet Connect</span><br>
+                  <div id="connect-url"></div>
                 </body>
             </html>
             ''')),
@@ -269,6 +269,7 @@ class _WalletConnectState extends State<WalletConnect> {
 
   _onSessionRequest(int id, WCPeerMeta peerMeta) {
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (_) {
         return SimpleDialog(
@@ -306,6 +307,7 @@ class _WalletConnectState extends State<WalletConnect> {
                     ),
                     onPressed: () async {
                       showDialog(
+                          barrierDismissible: false,
                           context: context,
                           builder: (context) {
                             var ethEnabledBlockChain = <Widget>[];
@@ -328,9 +330,10 @@ class _WalletConnectState extends State<WalletConnect> {
                                       jsonEncode(
                                           _wcClient.sessionStore.toJson()));
                                   var count = 0;
-                                  await _webViewController.evaluateJavascript(
-                                      source:
-                                          "document.body.innerHTML += '<br><div>Connected to: ${peerMeta.url}</div>'");
+                                  if (_webViewController != null)
+                                    await _webViewController.evaluateJavascript(
+                                        source:
+                                            "document.querySelector('#connect-url').innerText = 'Connected to: ${peerMeta.url}'");
                                   Navigator.popUntil(context, (route) {
                                     return count++ == 2;
                                   });
@@ -383,11 +386,15 @@ class _WalletConnectState extends State<WalletConnect> {
     );
   }
 
-  _onSessionError(dynamic message) {
+  _onSessionError(dynamic message) async {
+    if (_webViewController != null)
+      await _webViewController.evaluateJavascript(
+          source: "document.querySelector('#connect-url').innerText = ''");
     setState(() {
       connected = false;
     });
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (_) {
         return SimpleDialog(
@@ -418,12 +425,16 @@ class _WalletConnectState extends State<WalletConnect> {
     );
   }
 
-  _onSessionClosed(int code, String reason) {
+  _onSessionClosed(int code, String reason) async {
+    if (_webViewController != null)
+      await _webViewController.evaluateJavascript(
+          source: "document.querySelector('#connect-url').innerText = ''");
     _prefs.remove('session');
     setState(() {
       connected = false;
     });
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (_) {
         return SimpleDialog(
@@ -560,6 +571,7 @@ class _WalletConnectState extends State<WalletConnect> {
 
     var isEnoughBalance = userBalance > value + gas;
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (_) {
         return SimpleDialog(
@@ -792,6 +804,7 @@ class _WalletConnectState extends State<WalletConnect> {
         ? ethereumSignMessage.data
         : ascii.decode(hexToBytes(ethereumSignMessage.data));
     showDialog(
+      barrierDismissible: false,
       context: context,
       builder: (_) {
         return SimpleDialog(
