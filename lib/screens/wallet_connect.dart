@@ -15,9 +15,10 @@ import 'package:web3dart/crypto.dart';
 import 'package:web3dart/web3dart.dart';
 
 class WalletConnect extends StatefulWidget {
-  WalletConnect({this.title});
+  WalletConnect({this.title, this.logoImageBase64});
 
   final String title;
+  final String logoImageBase64;
 
   @override
   _WalletConnectState createState() => _WalletConnectState();
@@ -170,8 +171,28 @@ class _WalletConnectState extends State<WalletConnect> {
         ],
       ),
       body: InAppWebView(
-        initialUrlRequest:
-            URLRequest(url: Uri.parse('https://example.walletconnect.org')),
+        initialUrlRequest: URLRequest(url: Uri.parse('''data:text/html,
+            <html>
+              <head>
+                <meta charset="UTF-8" />
+                <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+                <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+                <style>
+                  html,body{
+                    font-family:sans-serif;
+                    width:100vw;
+                    height:100vh;
+                  }
+                </style>
+              </head>
+              <body style="display:flex;flex-direction:column;justify-content: center;align-items: center;">
+                
+                  <img src="data:image/png;base64,${widget.logoImageBase64}" style="width:150px"/>
+                  <br>
+                  <span style="font-size:25px;">${walletAbbr} Wallet Connect</span>
+                </body>
+            </html>
+            ''')),
         initialOptions: InAppWebViewGroupOptions(
           crossPlatform: InAppWebViewOptions(
             useShouldOverrideUrlLoading: true,

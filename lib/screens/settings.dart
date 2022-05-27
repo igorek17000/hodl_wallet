@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:cryptowallet/components/AppLogOut.dart';
 import 'package:cryptowallet/screens/createPin.dart';
@@ -11,6 +12,7 @@ import 'package:cryptowallet/screens/wallet_connect.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:local_auth/local_auth.dart';
@@ -325,9 +327,14 @@ class _SettingsState extends State<Settings> {
                 Divider(),
                 InkWell(
                   onTap: () async {
+                    ByteData bytes =
+                        await rootBundle.load('assets/logo.png');
+                    var buffer = bytes.buffer;
+                    var logoImageBase64 = base64.encode(Uint8List.view(buffer));
                     Navigator.push(context, MaterialPageRoute(builder: (ctx) {
                       return WalletConnect(
                         title: "Wallet Connect",
+                        logoImageBase64: logoImageBase64
                       );
                     }));
                   },
