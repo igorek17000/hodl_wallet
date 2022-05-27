@@ -7,11 +7,15 @@ import 'package:cryptowallet/screens/recovery_pharse.dart';
 import 'package:cryptowallet/screens/setCurrency.dart';
 import 'package:cryptowallet/screens/showDappBookmarks.dart';
 import 'package:cryptowallet/screens/view_seedPhrases.dart';
+import 'package:cryptowallet/screens/wallet_connect.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wallet_connect/wallet_connect.dart';
 
 import '../main.dart';
 
@@ -307,6 +311,36 @@ class _SettingsState extends State<Settings> {
                           ),
                           Text(
                             'Change pin',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Divider(),
+                InkWell(
+                  onTap: () async {
+                    Navigator.push(context, MaterialPageRoute(builder: (ctx) {
+                      return WalletConnect(title: "Wallet Connect",);
+                    }));
+                  },
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(FontAwesomeIcons.wallet),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'Wallet Connect',
                             style: TextStyle(fontSize: 18),
                           ),
                         ],
