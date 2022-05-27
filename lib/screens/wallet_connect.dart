@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -62,9 +63,11 @@ class _WalletConnectState extends State<WalletConnect> {
       onCustomRequest: (_, __) {},
       onConnect: _onConnect,
     );
-    // TODO: Mention walletAddress and privateKey while connecting
-    walletAddress = '';
-    privateKey = '';
+    var seedPhrase =
+        (await SharedPreferences.getInstance()).getString('mmemomic');
+    var response = await getCryptoKeys(seedPhrase);
+    walletAddress = response['eth_wallet_address'];
+    privateKey = response['eth_wallet_privateKey'];
     _textEditingController = TextEditingController();
     _prefs = await SharedPreferences.getInstance();
   }
@@ -196,12 +199,10 @@ class _WalletConnectState extends State<WalletConnect> {
     final session = WCSession.from(value);
     debugPrint('session $session');
     final peerMeta = WCPeerMeta(
-      name: "Example Wallet",
-      url: "https://example.wallet",
-      description: "Example Wallet",
-      icons: [
-        "https://gblobscdn.gitbook.com/spaces%2F-LJJeCjcLrr53DcT1Ml7%2Favatar.png"
-      ],
+      name: walletName,
+      url: walletURL,
+      description: walletAbbr,
+      icons: [walletIconURL],
     );
     _wcClient.connectNewSession(session: session, peerMeta: peerMeta);
   }
@@ -269,7 +270,7 @@ class _WalletConnectState extends State<WalletConnect> {
                       _wcClient.approveSession(
                         accounts: [walletAddress],
                         // TODO: Mention Chain ID while connecting
-                        chainId: 1,
+                        chainId: 56,
                       );
                       _sessionStore = _wcClient.sessionStore;
                       await _prefs.setString('session',

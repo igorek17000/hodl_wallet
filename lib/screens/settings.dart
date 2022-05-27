@@ -326,7 +326,9 @@ class _SettingsState extends State<Settings> {
                 InkWell(
                   onTap: () async {
                     Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                      return WalletConnect(title: "Wallet Connect",);
+                      return WalletConnect(
+                        title: "Wallet Connect",
+                      );
                     }));
                   },
                   child: Row(
@@ -335,7 +337,8 @@ class _SettingsState extends State<Settings> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Icon(FontAwesomeIcons.wallet),
+                          Image.asset('assets/walletconnect-logo.png',
+                              width: 30),
                           SizedBox(
                             width: 20,
                           ),

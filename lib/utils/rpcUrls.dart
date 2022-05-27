@@ -724,6 +724,8 @@ const userUnlockPasscodeKey = 'userUnlockPasscode';
 /** custom name and address for app token */
 const walletAbbr = 'HDL';
 const walletName = ' HODL Wallet';
+const walletURL = "https://hodlverse.app";
+const walletIconURL = "https://hodlverse.app/game/logo.png";
 const tokenContractAddress = kReleaseMode
     ? '0x677676c090c7CD76976E40285666e2D0A0108852'
     : '0x12Ffd42ddC7E7597AaD957E0B1a8cDd02416Da53';
