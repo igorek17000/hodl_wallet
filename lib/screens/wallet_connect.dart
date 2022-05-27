@@ -144,28 +144,35 @@ class _WalletConnectState extends State<WalletConnect> {
               }
             },
             itemBuilder: (_) {
-              return [
-                PopupMenuItem(
+              var menuItems = <PopupMenuItem<MenuItems>>[];
+              menuItems.addAll([
+                const PopupMenuItem(
                   value: MenuItems.PREVIOUS_SESSION,
                   child: Text('Connect Previous Session'),
                 ),
-                PopupMenuItem(
+                const PopupMenuItem(
                   value: MenuItems.KILL_SESSION,
                   child: Text('Kill Session'),
-                ),
-                PopupMenuItem(
-                  value: MenuItems.SCAN_QR,
-                  child: Text('Connect via QR'),
-                ),
-                PopupMenuItem(
-                  value: MenuItems.PASTE_CODE,
-                  child: Text('Connect via Code'),
-                ),
-                PopupMenuItem(
-                  value: MenuItems.CLEAR_CACHE,
-                  child: Text('Clear Cache'),
-                ),
-              ];
+                )
+              ]);
+
+              if (!_wcClient.isConnected) {
+                menuItems.addAll([
+                  const PopupMenuItem(
+                    value: MenuItems.SCAN_QR,
+                    child: Text('Connect via QR'),
+                  ),
+                  const PopupMenuItem(
+                    value: MenuItems.PASTE_CODE,
+                    child: Text('Connect via Code'),
+                  ),
+                ]);
+              }
+              menuItems.add(const PopupMenuItem(
+                value: MenuItems.CLEAR_CACHE,
+                child: Text('Clear Cache'),
+              ));
+              return menuItems;
             },
           ),
         ],
@@ -735,44 +742,31 @@ class _WalletConnectState extends State<WalletConnect> {
                 ),
               ),
             ),
-            isEnoughBalance
-                ? Row(
-                    children: [
-                      Expanded(
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                          ),
-                          onPressed: onConfirm,
-                          child: Text('CONFIRM'),
-                        ),
-                      ),
-                      const SizedBox(width: 16.0),
-                      Expanded(
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            primary: Colors.white,
-                            backgroundColor:
-                                Theme.of(context).colorScheme.secondary,
-                          ),
-                          onPressed: onReject,
-                          child: Text('REJECT'),
-                        ),
-                      ),
-                    ],
-                  )
-                : TextButton(
+            Row(
+              children: [
+                Expanded(
+                  child: TextButton(
                     style: TextButton.styleFrom(
                       primary: Colors.white,
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                     ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text('BACK'),
+                    onPressed: onConfirm,
+                    child: Text('CONFIRM'),
                   ),
+                ),
+                const SizedBox(width: 16.0),
+                Expanded(
+                  child: TextButton(
+                    style: TextButton.styleFrom(
+                      primary: Colors.white,
+                      backgroundColor: Theme.of(context).colorScheme.secondary,
+                    ),
+                    onPressed: onReject,
+                    child: Text('REJECT'),
+                  ),
+                ),
+              ],
+            ),
           ],
         );
       },
