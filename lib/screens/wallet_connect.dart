@@ -22,9 +22,6 @@ class WalletConnect extends StatefulWidget {
   _WalletConnectState createState() => _WalletConnectState();
 }
 
-const maticRpcUri =
-    'https://rpc-mainnet.maticvigil.com/v1/140d92ff81094f0f3d7babde06603390d7e581be';
-
 enum MenuItems {
   PREVIOUS_SESSION,
   KILL_SESSION,
@@ -41,10 +38,8 @@ class _WalletConnectState extends State<WalletConnect> {
   String walletAddress, privateKey;
   bool connected = false;
   WCSessionStore _sessionStore;
-  final _web3client = Web3Client(
-    maticRpcUri,
-    http.Client(),
-  );
+  Web3Client _web3client;
+  String currencySymbol;
 
   @override
   void initState() {
@@ -267,15 +262,55 @@ class _WalletConnectState extends State<WalletConnect> {
                       backgroundColor: Theme.of(context).colorScheme.secondary,
                     ),
                     onPressed: () async {
-                      _wcClient.approveSession(
-                        accounts: [walletAddress],
-                        // TODO: Mention Chain ID while connecting
-                        chainId: 56,
-                      );
-                      _sessionStore = _wcClient.sessionStore;
-                      await _prefs.setString('session',
-                          jsonEncode(_wcClient.sessionStore.toJson()));
-                      Navigator.pop(context);
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            var ethEnabledBlockChain = <Widget>[];
+                            for (String i in getBlockChains().keys) {
+                              ethEnabledBlockChain.add(InkWell(
+                                onTap: () async {
+                                  currencySymbol =
+                                      getBlockChains()[i]['symbol'];
+                                  _web3client = Web3Client(
+                                    getBlockChains()[i]['rpc'],
+                                    http.Client(),
+                                  );
+                                  _wcClient.approveSession(
+                                    accounts: [walletAddress],
+                                    chainId: getBlockChains()[i]['chainId'],
+                                  );
+                                  _sessionStore = _wcClient.sessionStore;
+                                  await _prefs.setString(
+                                      'session',
+                                      jsonEncode(
+                                          _wcClient.sessionStore.toJson()));
+                                  var count = 0;
+                                  Navigator.popUntil(context, (route) {
+                                    return count++ == 2;
+                                  });
+                                },
+                                child: _buildRow(
+                                    getBlockChains()[i]['image'] != null
+                                        ? getBlockChains()[i]['image']
+                                        : 'assets/ethereum_logo.png',
+                                    i),
+                              ));
+                            }
+                            return Dialog(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(40)),
+                                elevation: 16,
+                                child: Container(
+                                  child: ListView(
+                                    shrinkWrap: true,
+                                    children: <Widget>[
+                                      SizedBox(height: 20),
+                                      Center(child: Text('Select BlockChains')),
+                                      SizedBox(height: 20),
+                                    ]..addAll(ethEnabledBlockChain),
+                                  ),
+                                ));
+                          });
                     },
                     child: Text('APPROVE'),
                   ),
@@ -546,7 +581,7 @@ class _WalletConnectState extends State<WalletConnect> {
                   ),
                   Expanded(
                     child: Text(
-                      '${EthConversions.weiToEthUnTrimmed(gasPrice * BigInt.parse(ethereumTransaction.gas ?? '0'), 18)} MATIC',
+                      '${EthConversions.weiToEthUnTrimmed(gasPrice * BigInt.parse(ethereumTransaction.gas ?? '0'), 18)} ${currencySymbol}',
                       style: TextStyle(fontSize: 16.0),
                     ),
                   ),
@@ -569,7 +604,7 @@ class _WalletConnectState extends State<WalletConnect> {
                   ),
                   Expanded(
                     child: Text(
-                      '${EthConversions.weiToEthUnTrimmed(BigInt.parse(ethereumTransaction.value ?? '0'), 18)} MATIC',
+                      '${EthConversions.weiToEthUnTrimmed(BigInt.parse(ethereumTransaction.value ?? '0'), 18)} ${currencySymbol}',
                       style: TextStyle(fontSize: 16.0),
                     ),
                   ),
@@ -790,4 +825,25 @@ class _WalletConnectState extends State<WalletConnect> {
           : null,
     );
   }
+}
+
+Widget _buildRow(String imageAsset, String name) {
+  return Padding(
+    padding: const EdgeInsets.symmetric(horizontal: 20.0),
+    child: Column(
+      children: <Widget>[
+        SizedBox(height: 12),
+        Container(height: 2, color: Colors.deepPurple),
+        SizedBox(height: 12),
+        Row(
+          children: <Widget>[
+            CircleAvatar(backgroundImage: AssetImage(imageAsset)),
+            SizedBox(width: 12),
+            Text(name),
+            Spacer(),
+          ],
+        ),
+      ],
+    ),
+  );
 }
