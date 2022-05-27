@@ -42,6 +42,7 @@ class _WalletConnectState extends State<WalletConnect> {
   WCSessionStore _sessionStore;
   Web3Client _web3client;
   String currencySymbol;
+  String connectedWebsiteUrl;
 
   @override
   void initState() {
@@ -51,7 +52,10 @@ class _WalletConnectState extends State<WalletConnect> {
 
   @override
   void dispose() {
-    _wcClient.killSession();
+    if (_wcClient.isConnected) {
+      _wcClient.killSession();
+      _wcClient.disconnect();
+    }
     super.dispose();
   }
 
@@ -150,13 +154,16 @@ class _WalletConnectState extends State<WalletConnect> {
                   value: MenuItems.PREVIOUS_SESSION,
                   child: Text('Connect Previous Session'),
                 ),
-                const PopupMenuItem(
-                  value: MenuItems.KILL_SESSION,
-                  child: Text('Kill Session'),
-                )
               ]);
 
-              if (!_wcClient.isConnected) {
+              if (_wcClient.isConnected) {
+                menuItems.add(
+                  const PopupMenuItem(
+                    value: MenuItems.KILL_SESSION,
+                    child: Text('Kill Session'),
+                  ),
+                );
+              } else {
                 menuItems.addAll([
                   const PopupMenuItem(
                     value: MenuItems.SCAN_QR,
@@ -197,6 +204,7 @@ class _WalletConnectState extends State<WalletConnect> {
                   <img src="data:image/png;base64,${widget.logoImageBase64}" style="width:150px"/>
                   <br>
                   <span style="font-size:25px;">${walletAbbr} Wallet Connect</span>
+                  
                 </body>
             </html>
             ''')),
@@ -320,6 +328,9 @@ class _WalletConnectState extends State<WalletConnect> {
                                       jsonEncode(
                                           _wcClient.sessionStore.toJson()));
                                   var count = 0;
+                                  await _webViewController.evaluateJavascript(
+                                      source:
+                                          "document.body.innerHTML += '<br><div>Connected to: ${peerMeta.url}</div>'");
                                   Navigator.popUntil(context, (route) {
                                     return count++ == 2;
                                   });
