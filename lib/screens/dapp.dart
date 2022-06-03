@@ -309,7 +309,7 @@ class _dappState extends State<dapp> {
                 },
                 onPageFinished: (url) async {
                   await _controller.runJavascript(
-                      'document.documentElement.innerHTML = "<script>${widget.javascriptFiles}</script> + document.documentElement.innerHTML"');
+                      'document.documentElement.innerHTML = "<script>${widget.javascriptFiles}</script>" + document.documentElement.innerHTML');
                 },
                 javascriptMode: JavascriptMode.unrestricted,
                 gestureNavigationEnabled: true,
