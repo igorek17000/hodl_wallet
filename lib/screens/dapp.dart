@@ -334,7 +334,6 @@ class _dappState extends State<dapp> {
                   if (urlLoaded != url) {
                     urlLoaded = '';
                   }
-                  
                 },
                 onPageFinished: (url) async {
                   try {
