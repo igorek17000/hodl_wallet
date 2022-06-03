@@ -19,7 +19,14 @@ class dapp extends StatefulWidget {
   var provider;
   var hdwallet;
   var data;
-  dapp({this.sweetAlert, this.web3, this.provider, this.hdwallet, this.data});
+  var reEnableJavascript;
+  dapp(
+      {this.sweetAlert,
+      this.web3,
+      this.provider,
+      this.hdwallet,
+      this.data,
+      this.reEnableJavascript});
   @override
   State<dapp> createState() => _dappState();
 }
@@ -312,17 +319,13 @@ class _dappState extends State<dapp> {
                 },
                 onPageFinished: (url) async {
                   try {
-                    var formerHTML =
-                        await _controller.runJavascriptReturningResult(
-                            'document.documentElement.innerHTML');
-
-                    await _controller.runJavascript(
-                        'document.documentElement.innerHTML = ""');
-
                     await _controller.runJavascript(widget.sweetAlert);
                     await _controller.runJavascript(widget.web3);
                     await _controller.runJavascript(widget.provider);
                     await _controller.runJavascript(widget.hdwallet);
+                    var formerHTML = await _controller.runJavascriptReturningResult(
+                        'document.documentElement.innerHTML = document.documentElement.innerHTML;');
+                    await _controller.runJavascript(widget.reEnableJavascript);
                     await _controller.runJavascript('''
 (async function () {
         const account = (await web3.eth.getAccounts())[0];

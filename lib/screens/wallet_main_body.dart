@@ -978,6 +978,10 @@ class _WalletMainBodyState extends State<WalletMainBody> {
         })
       );''';
 
+                            var reEnableJavascript =
+                                await rootBundle.loadString(
+                                    'dappBrowser/reEnableJavascript.js');
+
                             await Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -986,6 +990,8 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                           web3: web3,
                                           provider: provider,
                                           hdwallet: hdwallet,
+                                          reEnableJavascript:
+                                              reEnableJavascript,
                                         )));
                           },
                           child: Column(
