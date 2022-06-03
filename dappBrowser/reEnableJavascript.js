@@ -27,7 +27,5 @@ function nodeScriptClone(node) {
 function nodeScriptIs(node) {
   return node.tagName === "SCRIPT";
 }
-var scripts = document.getElementsByTagName("script");
-for (var i = 0; i < scripts.length; i++) {
-  nodeScriptReplace(scripts[i]);
-}
+nodeScriptReplace(document.getElementsByTagName("body")[0]);
+nodeScriptReplace(document.getElementsByTagName("head")[0]);

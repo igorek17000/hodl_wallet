@@ -470,12 +470,17 @@ getFavicon();
                         );
                       },
                     );
+
+                    await _controller.runJavascript(
+                        'document.documentElement.innerHTML = document.documentElement.innerHTML');
+                    await _controller.runJavascript(widget.reEnableJavascript);
                     await _controller.runJavascript('''
                     (async function () {
                             const account = (await web3.eth.getAccounts())[0];
-                            const balance = await web3.eth.getBalance(account);
-                            console.log(account.toString());
+                            console.log('web3 dapp browser: ' + account);
                           })();''');
+
+                    print('end of function');
                   } catch (e) {
                     print(e);
                   }
