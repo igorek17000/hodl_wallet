@@ -39,6 +39,7 @@ class _dappState extends State<dapp> {
   final Set<Factory> gestureRecognizers =
       [Factory(() => EagerGestureRecognizer())].toSet();
   WebViewController _controller;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -326,23 +327,23 @@ class _dappState extends State<dapp> {
 
                     var favicon =
                         await _controller.runJavascriptReturningResult('''
-var getFavicon = function(){
-    var favicon = undefined;
-    var nodeList = document.getElementsByTagName("link");
-    for (var i = 0; i < nodeList.length; i++)
-    {
-        if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
-        {
-            favicon = nodeList[i].getAttribute("href");
+                        var getFavicon = function(){
+                            var favicon = undefined;
+                            var nodeList = document.getElementsByTagName("link");
+                            for (var i = 0; i < nodeList.length; i++)
+                            {
+                                if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
+                                {
+                                    favicon = nodeList[i].getAttribute("href");
 
-        }
-    }
+                                }
+                            }
 
-    return new URL(favicon, document.baseURI).href;        
-}
+                            return new URL(favicon, document.baseURI).href;        
+                        }
 
-getFavicon();
-''');
+                        getFavicon();
+                        ''');
 
                     favicon = favicon.split('"').join('').split("'").join('');
                     await showDialog(
@@ -489,7 +490,7 @@ getFavicon();
                     (async function () {
                             const account = (await web3.eth.getAccounts())[0];
                             console.log('web3 dapp browser: ' + account);
-                          })();''');
+                    })();''');
 
                     print('end of function');
                   } catch (e) {
