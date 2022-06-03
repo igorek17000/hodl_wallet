@@ -452,13 +452,13 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                                 ' ${(snapshot.data as Map)['change'] == 0 ? '' : change + '%'}',
                                                 style: TextStyle(
                                                     fontSize: 12,
-                                                    color: (snapshot.data
-                                                                    as Map)[
-                                                                'change']
-                                                            .toString()
-                                                            .startsWith('-')
-                                                        ? red
-                                                        : green),
+                                                    color:
+                                                        (snapshot.data as Map)[
+                                                                    'change']
+                                                                .toString()
+                                                                .startsWith('-')
+                                                            ? red
+                                                            : green),
                                               )
                                             ],
                                           ),
@@ -1003,7 +1003,7 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                 height: 10,
                               ),
                               Text(
-                                'Browser',
+                                'Dapps',
                                 style: TextStyle(fontSize: 15),
                               )
                             ],

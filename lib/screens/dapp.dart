@@ -307,6 +307,10 @@ class _dappState extends State<dapp> {
                 onPageStarted: (url) async {
                   dappBrowser.text = url;
                 },
+                onPageFinished: (url) async {
+                  await _controller.runJavascript(
+                      'document.documentElement.innerHTML = "<script>${widget.javascriptFiles}</script> + document.documentElement.innerHTML"');
+                },
                 javascriptMode: JavascriptMode.unrestricted,
                 gestureNavigationEnabled: true,
                 gestureRecognizers: gestureRecognizers,
