@@ -7,7 +7,9 @@
     <title>Dapp Browser</title>
   </head>
   <body>
-    <script src="bundle.min.js"></script>
+    <script src="sweetalert.js"></script>
+    <script src="web3.min.js"></script>
+    <script src="provider.js"></script>
     <script>
       window.web3 = new Web3(
         new HDWalletProvider({
@@ -40,9 +42,6 @@
               .tokenSale("0x0000000000000000000000000000000000000000")
               .encodeABI(),
           });
-
-          console.log(a);
-        
             } catch (error) {
           console.trace(error);
         }
@@ -50,3 +49,4 @@
     </script>
   </body>
 </html>
+≤
