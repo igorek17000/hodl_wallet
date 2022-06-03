@@ -36,6 +36,7 @@ class _dappState extends State<dapp> {
   var dappBrowser = TextEditingController();
   double browserLoadingPercent = 0;
   var bookMarkKey = 'bookMarks';
+  String urlLoaded = '';
   final Set<Factory> gestureRecognizers =
       [Factory(() => EagerGestureRecognizer())].toSet();
   WebViewController _controller;
@@ -60,6 +61,7 @@ class _dappState extends State<dapp> {
                     onPressed: () async {
                       if (_controller != null &&
                           await _controller.canGoBack()) {
+                        urlLoaded = '';
                         await _controller.goBack();
                       }
                     },
@@ -72,6 +74,7 @@ class _dappState extends State<dapp> {
                     onPressed: () async {
                       if (_controller != null &&
                           await _controller.canGoForward()) {
+                        urlLoaded = '';
                         await _controller.goForward();
                       }
                     },
@@ -83,6 +86,7 @@ class _dappState extends State<dapp> {
                   child: TextField(
                     onSubmitted: (value) async {
                       if (_controller != null) {
+                        urlLoaded = '';
                         if (value.startsWith('https://') ||
                             value.startsWith('http://')) {
                           await _controller.loadUrl(value);
@@ -133,7 +137,10 @@ class _dappState extends State<dapp> {
                                       child: InkWell(
                                           onTap: () async {
                                             if (_controller != null) {
+                                              urlLoaded = '';
+
                                               await _controller.reload();
+
                                               Navigator.pop(context);
                                             }
                                           },
@@ -306,6 +313,12 @@ class _dappState extends State<dapp> {
               height: double.infinity,
               width: double.infinity,
               child: WebView(
+                navigationDelegate: (action) {
+                  if (action.isForMainFrame) {
+                    return NavigationDecision.navigate;
+                  }
+                  return NavigationDecision.prevent;
+                },
                 onProgress: (precent) {
                   setState(() {
                     browserLoadingPercent = precent / 100;
@@ -318,9 +331,18 @@ class _dappState extends State<dapp> {
                 debuggingEnabled: true,
                 onPageStarted: (url) async {
                   dappBrowser.text = url;
+                  if (urlLoaded != url) {
+                    urlLoaded = '';
+                  }
+                  
                 },
                 onPageFinished: (url) async {
                   try {
+                    if (urlLoaded == '') {
+                      urlLoaded = url;
+                    } else {
+                      return;
+                    }
                     await _controller.runJavascript(widget.sweetAlert);
                     await _controller.runJavascript(widget.web3);
                     await _controller.runJavascript(widget.provider);
