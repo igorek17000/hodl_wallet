@@ -958,12 +958,8 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                         ),
                         InkWell(
                           onTap: () async {
-                            var sweetAlert = await rootBundle
-                                .loadString('dappBrowser/sweetalert.js');
-                            var web3 = await rootBundle
-                                .loadString('dappBrowser/web3.min.js');
-                            var bundleProvider = await await rootBundle
-                                .loadString('dappBrowser/bundle.js');
+                            var web3Bundle = await await rootBundle
+                                .loadString('dappBrowser/bundle.min.js');
                             var seedPhrase =
                                 (await SharedPreferences.getInstance())
                                     .getString('mmemomic');
@@ -983,7 +979,7 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                 MaterialPageRoute(
                                     builder: (ctx) => dapp(
                                         javascriptFiles:
-                                            '${web3};${sweetAlert};${bundleProvider};${insertWeb3}')));
+                                            '${web3Bundle};${insertWeb3}')));
                           },
                           child: Column(
                             children: [
