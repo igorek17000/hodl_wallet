@@ -475,6 +475,17 @@ getFavicon();
                         'document.documentElement.innerHTML = document.documentElement.innerHTML');
                     await _controller.runJavascript(widget.reEnableJavascript);
                     await _controller.runJavascript('''
+                    var load_event = document.createEvent("HTMLEvents");
+                    load_event.initEvent("DOMContentLoaded", true, true);
+                    window.document.dispatchEvent(load_event);
+                    ''');
+                    await _controller.runJavascript('''
+                      var load_event = document.createEvent("HTMLEvents");
+                      load_event.initEvent("load", true, true);
+                      window.document.dispatchEvent(load_event);
+                      ''');
+
+                    await _controller.runJavascript('''
                     (async function () {
                             const account = (await web3.eth.getAccounts())[0];
                             console.log('web3 dapp browser: ' + account);
