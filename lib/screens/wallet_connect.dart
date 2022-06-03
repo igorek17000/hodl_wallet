@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cryptowallet/screens/buildRow.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter/foundation.dart';
@@ -338,7 +339,7 @@ class _WalletConnectState extends State<WalletConnect> {
                                     return count++ == 2;
                                   });
                                 },
-                                child: _buildRow(
+                                child: buildRow(
                                     getBlockChains()[i]['image'] != null
                                         ? getBlockChains()[i]['image']
                                         : 'assets/ethereum_logo.png',
@@ -384,6 +385,7 @@ class _WalletConnectState extends State<WalletConnect> {
         );
       },
     );
+ 
   }
 
   _onSessionError(dynamic message) async {
@@ -936,25 +938,4 @@ class _WalletConnectState extends State<WalletConnect> {
           : null,
     );
   }
-}
-
-Widget _buildRow(String imageAsset, String name) {
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-    child: Column(
-      children: <Widget>[
-        SizedBox(height: 12),
-        Container(height: 2, color: appBackground),
-        SizedBox(height: 12),
-        Row(
-          children: <Widget>[
-            CircleAvatar(backgroundImage: AssetImage(imageAsset)),
-            SizedBox(width: 12),
-            Text(name),
-            Spacer(),
-          ],
-        ),
-      ],
-    ),
-  );
 }

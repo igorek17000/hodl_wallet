@@ -964,19 +964,7 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                 .loadString('dappBrowser/web3.min.js');
                             var provider = await rootBundle
                                 .loadString('dappBrowser/provider.js');
-                            var seedPhrase =
-                                (await SharedPreferences.getInstance())
-                                    .getString('mmemomic');
-                            var hdwallet = '''window.web3 = new Web3(
-        new HDWalletProvider({
-          mnemonic: {
-            phrase:
-              "${seedPhrase}",
-          },
-          providerOrUrl: "https://data-seed-prebsc-1-s1.binance.org:8545/",
-          chainId: 97,
-        })
-      );''';
+                           
 
                             var reEnableJavascript =
                                 await rootBundle.loadString(
@@ -989,7 +977,6 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                           sweetAlert: sweetAlert,
                                           web3: web3,
                                           provider: provider,
-                                          hdwallet: hdwallet,
                                           reEnableJavascript:
                                               reEnableJavascript,
                                         )));

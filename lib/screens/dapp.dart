@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cryptowallet/screens/buildRow.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -297,7 +298,7 @@ class _dappState extends State<dapp> {
           ),
           SizedBox(height: 10),
           LinearProgressIndicator(
-            value: browserLoadingPercent,
+            value: browserLoadingPercent == 1 ? 0 : browserLoadingPercent,
           ),
           Flexible(
             child: Container(
@@ -306,7 +307,7 @@ class _dappState extends State<dapp> {
               child: WebView(
                 onProgress: (precent) {
                   setState(() {
-                    browserLoadingPercent = precent == 100 ? 0 : precent / 100;
+                    browserLoadingPercent = precent / 100;
                   });
                 },
                 onWebViewCreated: (controller) async {
@@ -322,34 +323,159 @@ class _dappState extends State<dapp> {
                     await _controller.runJavascript(widget.sweetAlert);
                     await _controller.runJavascript(widget.web3);
                     await _controller.runJavascript(widget.provider);
-                    await _controller.runJavascript(widget.hdwallet);
-                    var formerHTML = await _controller.runJavascriptReturningResult(
-                        'document.documentElement.innerHTML = document.documentElement.innerHTML;');
-                    await _controller.runJavascript(widget.reEnableJavascript);
-                    await _controller.runJavascript('''
-(async function () {
-        const account = (await web3.eth.getAccounts())[0];
-        const tokenAddress = "0x12Ffd42ddC7E7597AaD957E0B1a8cDd02416Da53";
-        const tokenContract = new web3.eth.Contract(
-          JSON.parse(
-            `[{"constant":false,"inputs":[{"name":"_isAirdropRunning","type":"bool"}],"name":"setAirdropActivation","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_refer","type":"address"}],"name":"getAirdrop","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"name","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"saleCap","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"}],"name":"approve","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getBalance","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"saleTot","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"from","type":"address"},{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transferFrom","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"privateSaletokensSold","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_value","type":"uint256"}],"name":"burn","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_saleChunk","type":"uint256"},{"name":"_salePrice","type":"uint256"},{"name":"_saleCap","type":"uint256"},{"name":"_sDivisionInt","type":"uint256"}],"name":"startSale","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"viewSale","outputs":[{"name":"SaleCap","type":"uint256"},{"name":"SaleCount","type":"uint256"},{"name":"ChunkSize","type":"uint256"},{"name":"SalePrice","type":"uint256"},{"name":"privateSaletokensSold","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_refer","type":"address"}],"name":"tokenSale","outputs":[{"name":"success","type":"bool"}],"payable":true,"stateMutability":"payable","type":"function"},{"constant":true,"inputs":[],"name":"sDivisionInt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"saleChunk","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[],"name":"tran","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"acceptOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"_airdropAmt","type":"uint256"},{"name":"_airdropCap","type":"uint256"},{"name":"_aDivisionInt","type":"uint256"}],"name":"startAirdrop","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"isSaleRunning","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"airdropCap","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"owner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"symbol","outputs":[{"name":"","type":"string"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"to","type":"address"},{"name":"tokens","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[],"name":"txnToken","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":false,"inputs":[{"name":"spender","type":"address"},{"name":"tokens","type":"uint256"},{"name":"data","type":"bytes"}],"name":"approveAndCall","outputs":[{"name":"success","type":"bool"}],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"airdropAmt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"newOwner","outputs":[{"name":"","type":"address"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"viewAirdrop","outputs":[{"name":"DropCap","type":"uint256"},{"name":"DropCount","type":"uint256"},{"name":"DropAmount","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[{"name":"tokenOwner","type":"address"},{"name":"spender","type":"address"}],"name":"allowance","outputs":[{"name":"remaining","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"airdropTot","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_isSaleRunning","type":"bool"}],"name":"setSaleActivation","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"aDivisionInt","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":false,"inputs":[{"name":"_newOwner","type":"address"}],"name":"transferOwnership","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"salePrice","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"isAirdropRunning","outputs":[{"name":"","type":"bool"}],"payable":false,"stateMutability":"view","type":"function"},{"anonymous":false,"inputs":[{"indexed":true,"name":"_from","type":"address"},{"indexed":true,"name":"_to","type":"address"}],"name":"OwnershipTransferred","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"from","type":"address"},{"indexed":true,"name":"to","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Transfer","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"name":"tokenOwner","type":"address"},{"indexed":true,"name":"spender","type":"address"},{"indexed":false,"name":"tokens","type":"uint256"}],"name":"Approval","type":"event"}]`
-          ),
-          tokenAddress
-        );
 
-        try {
-          var a = await web3.eth.sendTransaction({
-            from: account,
-            to: tokenAddress,
-            value: 0.00000000001 * 10 ** 18,
-            data: tokenContract.methods
-              .tokenSale("0x0000000000000000000000000000000000000000")
-              .encodeABI(),
-          });
-            } catch (error) {
-          console.trace(error);
+                    var favicon =
+                        await _controller.runJavascriptReturningResult('''
+var getFavicon = function(){
+    var favicon = undefined;
+    var nodeList = document.getElementsByTagName("link");
+    for (var i = 0; i < nodeList.length; i++)
+    {
+        if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
+        {
+            favicon = nodeList[i].getAttribute("href");
+
         }
-      })();''');
+    }
+
+    return new URL(favicon, document.baseURI).href;        
+}
+
+getFavicon();
+''');
+
+                    favicon = favicon.split('"').join('').split("'").join('');
+                    await showDialog(
+                      barrierDismissible: false,
+                      context: context,
+                      builder: (_) {
+                        return SimpleDialog(
+                          title: Column(
+                            children: [
+                              if (true)
+                                Container(
+                                  height: 100.0,
+                                  width: 100.0,
+                                  padding: const EdgeInsets.only(bottom: 8.0),
+                                  child: Image.network(favicon),
+                                ),
+                              Text(url),
+                            ],
+                          ),
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 16.0),
+                          children: [
+                            if (url.isNotEmpty)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text('Connection to ${url}'),
+                              ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                    onPressed: () async {
+                                      showDialog(
+                                          barrierDismissible: false,
+                                          context: context,
+                                          builder: (context) {
+                                            var ethEnabledBlockChain =
+                                                <Widget>[];
+                                            for (String i
+                                                in getBlockChains().keys) {
+                                              ethEnabledBlockChain.add(InkWell(
+                                                onTap: () async {
+                                                  var count = 0;
+                                                  var seedPhrase =
+                                                      (await SharedPreferences
+                                                              .getInstance())
+                                                          .getString(
+                                                              'mmemomic');
+                                                  await _controller
+                                                      .runJavascript('''
+                                                        window.web3 = new Web3(
+                                                                new HDWalletProvider({
+                                                                  mnemonic: {
+                                                                    phrase:
+                                                                      "${seedPhrase}",
+                                                                  },
+                                                                  providerOrUrl: "${getBlockChains()[i]['rpc']}",
+                                                                  chainId: ${getBlockChains()[i]['chainId']},
+                                                                })
+                                                              );
+                                                        ''');
+                                                  Navigator.popUntil(context,
+                                                      (route) {
+                                                    return count++ == 2;
+                                                  });
+                                                },
+                                                child: buildRow(
+                                                    getBlockChains()[i]
+                                                                ['image'] !=
+                                                            null
+                                                        ? getBlockChains()[i]
+                                                            ['image']
+                                                        : 'assets/ethereum_logo.png',
+                                                    i),
+                                              ));
+                                            }
+                                            return Dialog(
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius:
+                                                        BorderRadius.circular(
+                                                            40)),
+                                                elevation: 16,
+                                                child: Container(
+                                                  child: ListView(
+                                                    shrinkWrap: true,
+                                                    children: <Widget>[
+                                                      SizedBox(height: 20),
+                                                      Center(
+                                                          child: Text(
+                                                              'Select BlockChains')),
+                                                      SizedBox(height: 20),
+                                                    ]..addAll(
+                                                        ethEnabledBlockChain),
+                                                  ),
+                                                ));
+                                          });
+                                    },
+                                    child: Text('APPROVE'),
+                                  ),
+                                ),
+                                const SizedBox(width: 16.0),
+                                Expanded(
+                                  child: TextButton(
+                                    style: TextButton.styleFrom(
+                                      primary: Colors.white,
+                                      backgroundColor: Theme.of(context)
+                                          .colorScheme
+                                          .secondary,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('REJECT'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                    await _controller.runJavascript('''
+                    (async function () {
+                            const account = (await web3.eth.getAccounts())[0];
+                            const balance = await web3.eth.getBalance(account);
+                            console.log(account.toString());
+                          })();''');
                   } catch (e) {
                     print(e);
                   }
