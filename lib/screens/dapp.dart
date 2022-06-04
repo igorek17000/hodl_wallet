@@ -331,16 +331,16 @@ class _dappState extends State<dapp> {
                 debuggingEnabled: true,
                 onPageStarted: (url) async {
                   dappBrowser.text = url;
-                  if (urlLoaded != url) {
-                    urlLoaded = '';
+                  if (urlLoaded == '') {
+                    urlLoaded = url;
                   }
                 },
                 onPageFinished: (url) async {
                   try {
                     if (urlLoaded == '') {
-                      urlLoaded = url;
-                    } else {
                       return;
+                    } else {
+                      urlLoaded = '';
                     }
                     await _controller.runJavascript(widget.sweetAlert);
                     await _controller.runJavascript(widget.web3);
