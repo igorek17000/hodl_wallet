@@ -61,7 +61,6 @@ class _dappState extends State<dapp> {
                     onPressed: () async {
                       if (_controller != null &&
                           await _controller.canGoBack()) {
-                        urlLoaded = '';
                         await _controller.goBack();
                       }
                     },
@@ -74,7 +73,6 @@ class _dappState extends State<dapp> {
                     onPressed: () async {
                       if (_controller != null &&
                           await _controller.canGoForward()) {
-                        urlLoaded = '';
                         await _controller.goForward();
                       }
                     },
@@ -86,7 +84,6 @@ class _dappState extends State<dapp> {
                   child: TextField(
                     onSubmitted: (value) async {
                       if (_controller != null) {
-                        urlLoaded = '';
                         if (value.startsWith('https://') ||
                             value.startsWith('http://')) {
                           await _controller.loadUrl(value);
@@ -137,8 +134,6 @@ class _dappState extends State<dapp> {
                                       child: InkWell(
                                           onTap: () async {
                                             if (_controller != null) {
-                                              urlLoaded = '';
-
                                               await _controller.reload();
 
                                               Navigator.pop(context);
