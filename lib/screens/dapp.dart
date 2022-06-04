@@ -493,9 +493,9 @@ class _dappState extends State<dapp> {
                       },
                     );
 
-                    await _controller.runJavascript(
-                        'document.documentElement.innerHTML = document.documentElement.innerHTML');
-                    await _controller.runJavascript(widget.reEnableJavascript);
+                    // await _controller.runJavascript(
+                    //     'document.documentElement.innerHTML = document.documentElement.innerHTML');
+                    // await _controller.runJavascript(widget.reEnableJavascript);
                     await _controller.runJavascript('''
                     var load_event = document.createEvent("HTMLEvents");
                     load_event.initEvent("DOMContentLoaded", true, true);
