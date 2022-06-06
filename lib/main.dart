@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return enterPin();
               }
             }
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           },
