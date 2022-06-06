@@ -1,4 +1,3 @@
-
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:cryptowallet/screens/createPin.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
@@ -11,6 +10,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   runApp(MyApp());
 }
+
 class MyApp extends StatelessWidget {
   static final ValueNotifier<ThemeMode> themeNotifier =
       ValueNotifier(ThemeMode.dark);
@@ -61,12 +61,15 @@ class _MyHomePageState extends State<MyHomePage> {
           }(),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              if (snapshot.data == true)
+              if (snapshot.data == true) {
                 return MainScreen();
-              else
+              } else {
                 return enterPin();
+              }
             }
-            return enterPin();
+            return Center(
+              child: CircularProgressIndicator(),
+            );
           },
         ),
         splashTransition: SplashTransition.slideTransition,
