@@ -327,16 +327,34 @@ class _SettingsState extends State<Settings> {
                 Divider(),
                 InkWell(
                   onTap: () async {
-                    ByteData bytes =
-                        await rootBundle.load('assets/logo.png');
-                    var buffer = bytes.buffer;
-                    var logoImageBase64 = base64.encode(Uint8List.view(buffer));
-                    Navigator.push(context, MaterialPageRoute(builder: (ctx) {
-                      return WalletConnect(
-                        title: "Wallet Connect",
-                        logoImageBase64: logoImageBase64
-                      );
-                    }));
+                    var localAuth = LocalAuthentication();
+                    if (await authenticateIsAvailable()) {
+                      bool didAuthenticate = await localAuth.authenticate(
+                          localizedReason:
+                              'Please authenticate to show wallet');
+
+                      if (didAuthenticate) {
+                        ByteData bytes =
+                            await rootBundle.load('assets/logo.png');
+                        var buffer = bytes.buffer;
+                        var logoImageBase64 =
+                            base64.encode(Uint8List.view(buffer));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (ctx) {
+                          return WalletConnect(
+                              title: "Wallet Connect",
+                              logoImageBase64: logoImageBase64);
+                        }));
+                      }
+                    } else {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => enterPin(
+                                    isEnterPin: true,
+                                    route: 'useWalletConnect',
+                                  )));
+                    }
                   },
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,

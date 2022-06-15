@@ -61,7 +61,8 @@ class _SendTokenState extends State<SendToken> {
                       InkWell(
                         onTap: () async {
                           // check if recipinet is valid eth address
-
+                          var isEns = false;
+                          var ensAddress = '';
                           print(amount.text);
                           if (double.tryParse(amount.text.trim()) == null) {
                             _scaffoldKey.currentState.showSnackBar(
@@ -89,10 +90,7 @@ class _SendTokenState extends State<SendToken> {
 
                                 print(address);
                                 if (address['success']) {
-                                  setState(() {
-                                    recipientAddressController.text =
-                                        address['msg'];
-                                  });
+                                  ensAddress = address['msg'];
                                 } else {
                                   _scaffoldKey.currentState
                                       .showSnackBar(SnackBar(
@@ -101,8 +99,10 @@ class _SendTokenState extends State<SendToken> {
                                   return;
                                 }
                               }
-                              web3.EthereumAddress.fromHex(
-                                  recipientAddressController.text.trim());
+
+                              if (ensAddress == "")
+                                web3.EthereumAddress.fromHex(
+                                    recipientAddressController.text.trim());
                             }
                           } catch (e) {
                             _scaffoldKey.currentState.showSnackBar(
@@ -119,7 +119,9 @@ class _SendTokenState extends State<SendToken> {
                           var data = {
                             ...(widget.data as Map),
                             'amount': amount.text.trim(),
-                            'recipient': recipientAddressController.text.trim()
+                            'recipient': ensAddress != ""
+                                ? ensAddress
+                                : recipientAddressController.text.trim()
                           };
                           await Navigator.push(
                             context,
@@ -142,6 +144,9 @@ class _SendTokenState extends State<SendToken> {
                   height: 40,
                 ),
                 TextFormField(
+                  autocorrect: false,
+                  enableSuggestions: false,
+                  keyboardType: TextInputType.visiblePassword,
                   validator: (value) {
                     if (value?.trim() == '')
                       return 'Recipient address is required';

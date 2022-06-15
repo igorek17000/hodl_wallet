@@ -1,11 +1,14 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:cryptowallet/screens/main_screen.dart';
 import 'package:cryptowallet/screens/recovery_pharse.dart';
 import 'package:cryptowallet/screens/showDappBookmarks.dart';
 import 'package:cryptowallet/screens/view_seedPhrases.dart';
+import 'package:cryptowallet/screens/wallet_connect.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class enterPin extends StatefulWidget {
@@ -155,6 +158,19 @@ class _enterPinState extends State<enterPin> {
                                                         data: (jsonDecode(
                                                                 seedPhrases)
                                                             as List))));
+                                        break;
+                                      case 'useWalletConnect':
+                                        ByteData bytes = await rootBundle
+                                            .load('assets/logo.png');
+                                        var buffer = bytes.buffer;
+                                        var logoImageBase64 = base64
+                                            .encode(Uint8List.view(buffer));
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (ctx) {
+                                          return WalletConnect(
+                                              title: "Wallet Connect",
+                                              logoImageBase64: logoImageBase64);
+                                        }));
                                         break;
                                     }
                                   } else {
