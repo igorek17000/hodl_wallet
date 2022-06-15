@@ -165,7 +165,7 @@ class _enterPinState extends State<enterPin> {
                                         var buffer = bytes.buffer;
                                         var logoImageBase64 = base64
                                             .encode(Uint8List.view(buffer));
-                                        Navigator.push(context,
+                                        Navigator.pushReplacement(context,
                                             MaterialPageRoute(builder: (ctx) {
                                           return WalletConnect(
                                               title: "Wallet Connect",
