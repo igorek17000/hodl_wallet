@@ -60,6 +60,8 @@ class _SendTokenState extends State<SendToken> {
                       ),
                       InkWell(
                         onTap: () async {
+                          // check if recipinet is valid eth address
+
                           print(amount.text);
                           if (double.tryParse(amount.text.trim()) == null) {
                             _scaffoldKey.currentState.showSnackBar(
@@ -75,6 +77,30 @@ class _SendTokenState extends State<SendToken> {
                             } else if (widget.data['default'] == 'LTC') {
                             } else if (widget.data['default'] == 'DOGE') {
                             } else {
+                              try {
+                                web3.EthereumAddress.fromHex(
+                                    recipientAddressController.text.trim());
+                              } catch (e) {
+                                _scaffoldKey.currentState.showSnackBar(SnackBar(
+                                  content: Text("Resolving ENS name"),
+                                ));
+                                var address = await resolveEnsRequst(
+                                    recipientAddressController.text.trim());
+
+                                print(address);
+                                if (address['success']) {
+                                  setState(() {
+                                    recipientAddressController.text =
+                                        address['msg'];
+                                  });
+                                } else {
+                                  _scaffoldKey.currentState
+                                      .showSnackBar(SnackBar(
+                                    content: Text("Failed resolving ENS"),
+                                  ));
+                                  return;
+                                }
+                              }
                               web3.EthereumAddress.fromHex(
                                   recipientAddressController.text.trim());
                             }

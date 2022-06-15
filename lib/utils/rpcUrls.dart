@@ -141,7 +141,19 @@ Map getBlockChains() {
 
 const appBaseUrl = 'https://memnormic-phrase-generator.herokuapp.com/';
 const appCreateNFT = '${appBaseUrl}create-nft';
+const resolveEns = "${appBaseUrl}resolve-ens/";
 const dappBrowserInitialUrl = 'https://google.com';
+
+Future resolveEnsRequst(String ens) async {
+  // send get request
+  try {
+    final response = await http.get(Uri.parse(resolveEns + ens));
+    // return json decode response
+    return jsonDecode(response.body);
+  } catch (e) {
+    return {'success': false, 'msg': 'Error resolving ens'};
+  }
+}
 
 Future calculateKey(String mnemonic) async {
   return jsonDecode((await get(
