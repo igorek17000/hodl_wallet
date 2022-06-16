@@ -52,7 +52,7 @@ class _SettingsState extends State<Settings>
                       MaterialPageRoute(builder: (ctx) => setCurrency()));
                 },
                 child: Container(
-                  height: 50,
+                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -73,9 +73,6 @@ class _SettingsState extends State<Settings>
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
               ),
               Divider(),
               InkWell(
@@ -115,7 +112,7 @@ class _SettingsState extends State<Settings>
                   }
                 },
                 child: Container(
-                  height: 50,
+                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -136,9 +133,6 @@ class _SettingsState extends State<Settings>
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
               ),
               Divider(),
               InkWell(
@@ -171,7 +165,7 @@ class _SettingsState extends State<Settings>
                   }
                 },
                 child: Container(
-                  height: 50,
+                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -192,9 +186,6 @@ class _SettingsState extends State<Settings>
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
               ),
               Divider(),
               InkWell(
@@ -224,7 +215,7 @@ class _SettingsState extends State<Settings>
                   }
                 },
                 child: Container(
-                  height: 50,
+                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -246,9 +237,6 @@ class _SettingsState extends State<Settings>
                   ),
                 ),
               ),
-              SizedBox(
-                height: 10,
-              ),
               Divider(),
               InkWell(
                 onTap: () async {
@@ -262,7 +250,7 @@ class _SettingsState extends State<Settings>
                   );
                 },
                 child: Container(
-                  height: 50,
+                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -283,9 +271,6 @@ class _SettingsState extends State<Settings>
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
               ),
               Divider(),
               InkWell(
@@ -317,7 +302,7 @@ class _SettingsState extends State<Settings>
                   }
                 },
                 child: Container(
-                  height: 50,
+                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -338,9 +323,6 @@ class _SettingsState extends State<Settings>
                     ],
                   ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
               ),
               Divider(),
               InkWell(
@@ -372,7 +354,7 @@ class _SettingsState extends State<Settings>
                   }
                 },
                 child: Container(
-                  height: 50,
+                  height: 35,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
