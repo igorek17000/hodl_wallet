@@ -51,24 +51,27 @@ class _SettingsState extends State<Settings>
                   Navigator.push(context,
                       MaterialPageRoute(builder: (ctx) => setCurrency()));
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Icon(Icons.money),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'Currency',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Icon(Icons.money),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'Currency',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -111,24 +114,27 @@ class _SettingsState extends State<Settings>
                                 )));
                   }
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Icon(Icons.bookmark),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'BookMarks',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Icon(Icons.bookmark),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'BookMarks',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -164,24 +170,27 @@ class _SettingsState extends State<Settings>
                                 ))));
                   }
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Icon(Icons.vpn_key),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'Show Seed Phrase',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Icon(Icons.vpn_key),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'Show Seed Phrase',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -214,24 +223,27 @@ class _SettingsState extends State<Settings>
                                 )));
                   }
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Icon(Icons.remove_red_eye),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'View Wallets',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Icon(Icons.remove_red_eye),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'View Wallets',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -249,24 +261,27 @@ class _SettingsState extends State<Settings>
                     ),
                   );
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Icon(Icons.add),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'Import Wallet',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Icon(Icons.add),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'Import Wallet',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -301,24 +316,27 @@ class _SettingsState extends State<Settings>
                                 )));
                   }
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: const [
-                        Icon(Icons.pin),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'Change pin',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: const [
+                          Icon(Icons.pin),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'Change pin',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ),
               SizedBox(
@@ -353,24 +371,28 @@ class _SettingsState extends State<Settings>
                                 )));
                   }
                 },
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Image.asset('assets/walletconnect-logo.png', width: 30),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        Text(
-                          'Wallet Connect',
-                          style: TextStyle(fontSize: 18),
-                        ),
-                      ],
-                    ),
-                    const Icon(Icons.arrow_forward_ios)
-                  ],
+                child: Container(
+                  height: 50,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Image.asset('assets/walletconnect-logo.png',
+                              width: 30),
+                          SizedBox(
+                            width: 20,
+                          ),
+                          Text(
+                            'Wallet Connect',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ],
+                      ),
+                      const Icon(Icons.arrow_forward_ios)
+                    ],
+                  ),
                 ),
               ),
             ],
