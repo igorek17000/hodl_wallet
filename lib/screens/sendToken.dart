@@ -29,7 +29,8 @@ class _SendTokenState extends State<SendToken> {
   var recipientAddressController = TextEditingController();
   var amount = TextEditingController();
   final GlobalKey<FormState> formState = GlobalKey<FormState>();
-  var _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,8 +48,9 @@ class _SendTokenState extends State<SendToken> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            if (Navigator.canPop(context))
+                            if (Navigator.canPop(context)) {
                               Navigator.pop(context);
+                            }
                           },
                           icon: Icon(
                             Icons.arrow_back,
@@ -61,49 +63,52 @@ class _SendTokenState extends State<SendToken> {
                       InkWell(
                         onTap: () async {
                           // check if recipinet is valid eth address
-                          var isEns = false;
-                          var ensAddress = '';
-                          print(amount.text);
+                          var cryptoDomainAddress = '';
                           if (double.tryParse(amount.text.trim()) == null) {
                             _scaffoldKey.currentState.showSnackBar(
-                              SnackBar(
+                              const SnackBar(
                                 content: Text('Please enter an amount'),
                               ),
                             );
                             return;
                           }
+
                           try {
+                            // check if address is a domain
+                            if (recipientAddressController.text.contains('.')) {
+                              _scaffoldKey.currentState.showSnackBar(
+                                SnackBar(
+                                  content: Text('Resolving domain address...'),
+                                ),
+                              );
+                              var address = await resolveCryptoNameService(
+                                  cryptoDomainName:
+                                      recipientAddressController.text.trim(),
+                                  rpc: widget.data['rpc'] ?? '',
+                                  currency: widget.data['default'] ??
+                                      getBlockChains()[widget.data['network']]
+                                          ['symbol']);
+
+                              if (address['success']) {
+                                cryptoDomainAddress = address['msg'];
+                              } else {
+                                _scaffoldKey.currentState.showSnackBar(
+                                  SnackBar(
+                                    content: Text('Error resolving domain'),
+                                  ),
+                                );
+                                return;
+                              }
+                            }
+
                             if (widget.data['default'] == 'BTC') {
                             } else if (widget.data['default'] == 'BTCTEST') {
                             } else if (widget.data['default'] == 'LTC') {
                             } else if (widget.data['default'] == 'DOGE') {
-                            } else {
-                              try {
-                                web3.EthereumAddress.fromHex(
-                                    recipientAddressController.text.trim());
-                              } catch (e) {
-                                _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                  content: Text("Resolving ENS name"),
-                                ));
-                                var address = await resolveEnsRequst(
-                                  ens: recipientAddressController.text.trim(),
-                                  rpc: widget.data['rpc'],
-                                );
-
-                                if (address['success']) {
-                                  ensAddress = address['msg'];
-                                } else {
-                                  _scaffoldKey.currentState
-                                      .showSnackBar(SnackBar(
-                                    content: Text("Failed resolving ENS"),
-                                  ));
-                                  return;
-                                }
-                              }
-
-                              if (ensAddress == "")
-                                web3.EthereumAddress.fromHex(
-                                    recipientAddressController.text.trim());
+                            } else if (cryptoDomainAddress == '' &&
+                                widget.data['rpc'] != null) {
+                              web3.EthereumAddress.fromHex(
+                                  recipientAddressController.text.trim());
                             }
                           } catch (e) {
                             _scaffoldKey.currentState.showSnackBar(
@@ -115,15 +120,19 @@ class _SendTokenState extends State<SendToken> {
                             return;
                           }
                           if (amount.text.trim() == "" ||
-                              recipientAddressController.text.trim() == "")
+                              recipientAddressController.text.trim() == "") {
                             return;
+                          }
                           var data = {
                             ...(widget.data as Map),
                             'amount': amount.text.trim(),
-                            'recipient': ensAddress != ""
-                                ? ensAddress
+                            'recipient': cryptoDomainAddress != ""
+                                ? cryptoDomainAddress
                                 : recipientAddressController.text.trim()
                           };
+                          // hide snackbar if it is showing
+                          _scaffoldKey.currentState.hideCurrentSnackBar();
+                          FocusManager.instance.primaryFocus?.unfocus();
                           await Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -149,10 +158,11 @@ class _SendTokenState extends State<SendToken> {
                   enableSuggestions: false,
                   keyboardType: TextInputType.visiblePassword,
                   validator: (value) {
-                    if (value?.trim() == '')
+                    if (value?.trim() == '') {
                       return 'Recipient address is required';
-                    else
+                    } else {
                       return null;
+                    }
                   },
                   controller: widget.addressData == null
                       ? recipientAddressController
@@ -188,10 +198,11 @@ class _SendTokenState extends State<SendToken> {
                         keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
                         validator: (value) {
-                          if (value?.trim() == '')
+                          if (value?.trim() == '') {
                             return 'Amount is required';
-                          else
+                          } else {
                             return null;
+                          }
                         },
                         controller: amount
                           ..text = widget.data['tokenId'].toString(),
@@ -208,10 +219,11 @@ class _SendTokenState extends State<SendToken> {
                         keyboardType:
                             TextInputType.numberWithOptions(decimal: true),
                         validator: (value) {
-                          if (value?.trim() == '')
+                          if (value?.trim() == '') {
                             return 'Amount is required';
-                          else
+                          } else {
                             return null;
+                          }
                         },
                         controller: amount,
                         decoration: InputDecoration(

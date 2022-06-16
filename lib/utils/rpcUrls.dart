@@ -144,14 +144,13 @@ const appCreateNFT = '${appBaseUrl}create-nft';
 const resolveEns = "${appBaseUrl}resolve-ens/";
 const dappBrowserInitialUrl = 'https://google.com';
 
-Future resolveEnsRequst({String ens, String rpc}) async {
+Future resolveCryptoNameService(
+    {String cryptoDomainName, String rpc, String currency}) async {
   // send get request
   try {
-    final response = await http.post(Uri.parse(resolveEns + ens),
+    final response = await http.post(Uri.parse(resolveEns + cryptoDomainName),
         body: jsonEncode(
-          {
-            'rpc': rpc,
-          },
+          {'rpc': rpc, 'currency': currency},
         ),
         headers: {
           'Content-Type': 'application/json',
