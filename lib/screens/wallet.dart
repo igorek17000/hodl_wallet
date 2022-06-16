@@ -28,41 +28,42 @@ class _WalletState extends State<Wallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: appBackground,
-          currentIndex: currentIndex_,
-          onTap: (index) {
-            setState(() {
-              currentIndex_ = index;
-            });
-          },
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.account_balance_wallet,
-                size: 30,
-              ),
-              label: 'Wallet',
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: appBackground,
+        currentIndex: currentIndex_,
+        onTap: (index) {
+          setState(() {
+            currentIndex_ = index;
+          });
+        },
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.account_balance_wallet,
+              size: 30,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.swap_horiz,
-                size: 40,
-              ),
-              label: 'Swap',
+            label: 'Wallet',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.swap_horiz,
+              size: 40,
             ),
-            BottomNavigationBarItem(
-              icon: Icon(
-                Icons.settings,
-                size: 30,
-              ),
-              label: 'Settings',
+            label: 'Swap',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(
+              Icons.settings,
+              size: 30,
             ),
-          ],
-        ),
-        body: IndexedStack(
-          index: currentIndex_,
-          children: pages,
-        ));
+            label: 'Settings',
+          ),
+        ],
+      ),
+      body: IndexedStack(
+        index: currentIndex_,
+        children: pages,
+      ),
+    );
   }
 }
