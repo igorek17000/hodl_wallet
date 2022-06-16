@@ -2,6 +2,7 @@ import 'package:cryptowallet/screens/settings.dart';
 import 'package:cryptowallet/screens/swap.dart';
 import 'package:cryptowallet/screens/wallet_main_body.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
+import 'package:flutter/services.dart';
 import './private_sale.dart';
 import 'package:flutter/material.dart';
 
@@ -18,6 +19,7 @@ class _WalletState extends State<Wallet> {
   @override
   void initState() {
     super.initState();
+    FocusManager.instance.primaryFocus?.unfocus();
     pageController = PageController(initialPage: 0);
   }
 
@@ -25,6 +27,8 @@ class _WalletState extends State<Wallet> {
     setState(() {
       currentIndex_ = index;
     });
+    // remove keyboard focus
+    FocusManager.instance.primaryFocus?.unfocus();
     pageController.animateToPage(index,
         duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
   }
@@ -32,6 +36,8 @@ class _WalletState extends State<Wallet> {
   void onPageChanged(int index) {
     setState(() {
       currentIndex_ = index;
+      // remove focus
+      FocusManager.instance.primaryFocus?.unfocus();
     });
   }
 

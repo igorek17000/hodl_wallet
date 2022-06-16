@@ -29,272 +29,260 @@ class Settings extends StatefulWidget {
   _SettingsState createState() => _SettingsState();
 }
 
-class _SettingsState extends State<Settings> with AutomaticKeepAliveClientMixin{
+class _SettingsState extends State<Settings>
+    with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.all(25),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () async {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (ctx) => setCurrency()));
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Icon(Icons.money),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'Currency',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () async {
-                    var localAuth = LocalAuthentication();
-                    var pref = await SharedPreferences.getInstance();
-                    if (await authenticateIsAvailable()) {
-                      bool didAuthenticate = await localAuth.authenticate(
-                          localizedReason:
-                              'Please authenticate to show saved bookmark');
-
-                      print(didAuthenticate);
-                      if (didAuthenticate) {
-                        if (pref.getString('bookMarks') != null) {
-                          var bookMarkJson =
-                              jsonDecode(pref.getString('bookMarks')) as Map;
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (ctx) =>
-                                      showDappBookmarks(data: bookMarkJson)));
-                        } else {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (ctx) =>
-                                      showDappBookmarks(data: {})));
-                        }
-                      }
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => enterPin(
-                                    isEnterPin: true,
-                                    route: 'bookmark',
-                                  )));
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Icon(Icons.bookmark),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'BookMarks',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () async {
-                    var localAuth = LocalAuthentication();
-
-                    bool didAuthenticate = false;
-
-                    if (await authenticateIsAvailable()) {
-                      didAuthenticate = await localAuth.authenticate(
-                          localizedReason:
-                              'Please authenticate to show seed phrase');
-                      String seedPhrase =
-                          (await SharedPreferences.getInstance())
-                              .getString('mmemomic');
-                      if (didAuthenticate) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (ctx) => RecoveryPhrase(
-                                    data: seedPhrase, verify: false)));
-                      }
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: ((context) => enterPin(
-                                    isEnterPin: true,
-                                    route: 'showSeedPhrase',
-                                  ))));
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Icon(Icons.vpn_key),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'Show Seed Phrase',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () async {
-                    var localAuth = LocalAuthentication();
-                    var seedPhrases = (await SharedPreferences.getInstance())
-                        .getString('seedPhrases');
-                    if (await authenticateIsAvailable()) {
-                      bool didAuthenticate = await localAuth.authenticate(
-                          localizedReason:
-                              'Please authenticate to show wallet');
-
-                      if (didAuthenticate) {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (ctx) => ViewSeedPhrase(
-                                    data: (jsonDecode(seedPhrases) as List))));
-                      }
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => enterPin(
-                                    isEnterPin: true,
-                                    route: 'viewWallet',
-                                  )));
-                    }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Icon(Icons.remove_red_eye),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'View Wallets',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () async {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (ctx) => MainScreen(
-                          add: true,
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(25),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(
+                height: 20,
+              ),
+              InkWell(
+                onTap: () async {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (ctx) => setCurrency()));
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Icon(Icons.money),
+                        SizedBox(
+                          width: 20,
                         ),
-                      ),
-                    );
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Icon(Icons.add),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'Import Wallet',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
+                        Text(
+                          'Currency',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.arrow_forward_ios)
+                  ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () async {
-                    var localAuth = LocalAuthentication();
-                    var seedPhrases = (await SharedPreferences.getInstance())
-                        .getString('seedPhrases');
-                    if (await authenticateIsAvailable()) {
-                      bool didAuthenticate = await localAuth.authenticate(
-                          localizedReason: 'Please authenticate to change pin');
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(),
+              InkWell(
+                onTap: () async {
+                  var localAuth = LocalAuthentication();
+                  var pref = await SharedPreferences.getInstance();
+                  if (await authenticateIsAvailable()) {
+                    bool didAuthenticate = await localAuth.authenticate(
+                        localizedReason:
+                            'Please authenticate to show saved bookmark');
 
-                      if (didAuthenticate) {
+                    print(didAuthenticate);
+                    if (didAuthenticate) {
+                      if (pref.getString('bookMarks') != null) {
+                        var bookMarkJson =
+                            jsonDecode(pref.getString('bookMarks')) as Map;
                         Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (ctx) => enterPin(
-                                      isEnterPin: true,
-                                      route: 'changePin',
-                                    )));
+                                builder: (ctx) =>
+                                    showDappBookmarks(data: bookMarkJson)));
+                      } else {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (ctx) => showDappBookmarks(data: {})));
                       }
-                    } else {
+                    }
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) => enterPin(
+                                  isEnterPin: true,
+                                  route: 'bookmark',
+                                )));
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Icon(Icons.bookmark),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'BookMarks',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.arrow_forward_ios)
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(),
+              InkWell(
+                onTap: () async {
+                  var localAuth = LocalAuthentication();
+
+                  bool didAuthenticate = false;
+
+                  if (await authenticateIsAvailable()) {
+                    didAuthenticate = await localAuth.authenticate(
+                        localizedReason:
+                            'Please authenticate to show seed phrase');
+                    String seedPhrase = (await SharedPreferences.getInstance())
+                        .getString('mmemomic');
+                    if (didAuthenticate) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => RecoveryPhrase(
+                                  data: seedPhrase, verify: false)));
+                    }
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: ((context) => enterPin(
+                                  isEnterPin: true,
+                                  route: 'showSeedPhrase',
+                                ))));
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Icon(Icons.vpn_key),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'Show Seed Phrase',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.arrow_forward_ios)
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(),
+              InkWell(
+                onTap: () async {
+                  var localAuth = LocalAuthentication();
+                  var seedPhrases = (await SharedPreferences.getInstance())
+                      .getString('seedPhrases');
+                  if (await authenticateIsAvailable()) {
+                    bool didAuthenticate = await localAuth.authenticate(
+                        localizedReason: 'Please authenticate to show wallet');
+
+                    if (didAuthenticate) {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => ViewSeedPhrase(
+                                  data: (jsonDecode(seedPhrases) as List))));
+                    }
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) => enterPin(
+                                  isEnterPin: true,
+                                  route: 'viewWallet',
+                                )));
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Icon(Icons.remove_red_eye),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'View Wallets',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.arrow_forward_ios)
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(),
+              InkWell(
+                onTap: () async {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => MainScreen(
+                        add: true,
+                      ),
+                    ),
+                  );
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Icon(Icons.add),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'Import Wallet',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.arrow_forward_ios)
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(),
+              InkWell(
+                onTap: () async {
+                  var localAuth = LocalAuthentication();
+                  var seedPhrases = (await SharedPreferences.getInstance())
+                      .getString('seedPhrases');
+                  if (await authenticateIsAvailable()) {
+                    bool didAuthenticate = await localAuth.authenticate(
+                        localizedReason: 'Please authenticate to change pin');
+
+                    if (didAuthenticate) {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -303,85 +291,89 @@ class _SettingsState extends State<Settings> with AutomaticKeepAliveClientMixin{
                                     route: 'changePin',
                                   )));
                     }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
-                          Icon(Icons.pin),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'Change pin',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) => enterPin(
+                                  isEnterPin: true,
+                                  route: 'changePin',
+                                )));
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: const [
+                        Icon(Icons.pin),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'Change pin',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.arrow_forward_ios)
+                  ],
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Divider(),
-                InkWell(
-                  onTap: () async {
-                    var localAuth = LocalAuthentication();
-                    if (await authenticateIsAvailable()) {
-                      bool didAuthenticate = await localAuth.authenticate(
-                          localizedReason:
-                              'Please authenticate to show wallet');
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              Divider(),
+              InkWell(
+                onTap: () async {
+                  var localAuth = LocalAuthentication();
+                  if (await authenticateIsAvailable()) {
+                    bool didAuthenticate = await localAuth.authenticate(
+                        localizedReason: 'Please authenticate to show wallet');
 
-                      if (didAuthenticate) {
-                        ByteData bytes =
-                            await rootBundle.load('assets/logo.png');
-                        var buffer = bytes.buffer;
-                        var logoImageBase64 =
-                            base64.encode(Uint8List.view(buffer));
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (ctx) {
-                          return WalletConnect(
-                              title: "Wallet Connect",
-                              logoImageBase64: logoImageBase64);
-                        }));
-                      }
-                    } else {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => enterPin(
-                                    isEnterPin: true,
-                                    route: 'useWalletConnect',
-                                  )));
+                    if (didAuthenticate) {
+                      ByteData bytes = await rootBundle.load('assets/logo.png');
+                      var buffer = bytes.buffer;
+                      var logoImageBase64 =
+                          base64.encode(Uint8List.view(buffer));
+                      Navigator.push(context, MaterialPageRoute(builder: (ctx) {
+                        return WalletConnect(
+                            title: "Wallet Connect",
+                            logoImageBase64: logoImageBase64);
+                      }));
                     }
-                  },
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Image.asset('assets/walletconnect-logo.png',
-                              width: 30),
-                          SizedBox(
-                            width: 20,
-                          ),
-                          Text(
-                            'Wallet Connect',
-                            style: TextStyle(fontSize: 18),
-                          ),
-                        ],
-                      ),
-                      const Icon(Icons.arrow_forward_ios)
-                    ],
-                  ),
+                  } else {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (ctx) => enterPin(
+                                  isEnterPin: true,
+                                  route: 'useWalletConnect',
+                                )));
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Image.asset('assets/walletconnect-logo.png', width: 30),
+                        SizedBox(
+                          width: 20,
+                        ),
+                        Text(
+                          'Wallet Connect',
+                          style: TextStyle(fontSize: 18),
+                        ),
+                      ],
+                    ),
+                    const Icon(Icons.arrow_forward_ios)
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
       ),
