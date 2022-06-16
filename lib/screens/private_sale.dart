@@ -17,6 +17,7 @@ import '../utils/slideUpPanel.dart';
 import 'package:web3dart/web3dart.dart' as web3;
 
 class private_sale extends StatefulWidget {
+  const private_sale({Key key}) : super(key: key);
   @override
   _private_saleState createState() => _private_saleState();
 }

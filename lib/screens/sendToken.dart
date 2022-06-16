@@ -171,7 +171,8 @@ class _SendTokenState extends State<SendToken> {
                                     seedPhrase: widget.seedPhrase)));
                       },
                     ),
-                    hintText: 'Recipient Address',
+                    hintText: 'Recipient Address' +
+                        (widget.data['rpc'] == null ? '' : ' or ENS'),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),

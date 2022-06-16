@@ -60,6 +60,9 @@ class _WalletState extends State<Wallet> {
             ),
           ],
         ),
-        body: pages[currentIndex_]);
+        body: IndexedStack(
+          index: currentIndex_,
+          children: pages,
+        ));
   }
 }

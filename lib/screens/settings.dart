@@ -22,8 +22,8 @@ import 'package:wallet_connect/wallet_connect.dart';
 import '../main.dart';
 
 class Settings extends StatefulWidget {
-  var isDarkMode;
-  Settings({this.isDarkMode});
+  final isDarkMode;
+  Settings({this.isDarkMode, Key key}) : super(key: key);
 
   @override
   _SettingsState createState() => _SettingsState();
