@@ -99,6 +99,7 @@ class _private_saleState extends State<private_sale>
                 ),
                 StreamBuilder(stream: () async* {
                   while (true) {
+                    var pref = await SharedPreferences.getInstance();
                     try {
                       final client = web3.Web3Client(
                         getBlockChains()[walletContractNetwork]['rpc'],
@@ -121,27 +122,50 @@ class _private_saleState extends State<private_sale>
                       var currencyWithSymbol = jsonDecode(await rootBundle
                           .loadString('json/currency_symbol.json'));
                       var defaultCurrency =
-                          (await SharedPreferences.getInstance())
-                                  .getString('defaultCurrency') ??
-                              "USD";
+                          pref.getString('defaultCurrency') ?? "USD";
                       var symbol =
                           (currencyWithSymbol[defaultCurrency]['symbol']);
+
+                      await pref.setString(
+                          privateSaleDataKey,
+                          jsonEncode({
+                            'bnbPrice': bnbPrice,
+                            'tokenPrice': tokenPriceDouble,
+                            'symbol': symbol
+                          }));
 
                       yield {
                         'bnbPrice': bnbPrice,
                         'tokenPrice': tokenPriceDouble,
-                        'symbol': symbol
+                        'symbol': symbol,
+                        'success': true
                       };
                     } catch (e) {
-                      yield {
-                        'error': e.toString(),
-                      };
+                      var privateSaleSavedData =
+                          pref.getString(privateSaleDataKey);
+
+                      if (privateSaleSavedData != null) {
+                        var privateSaleData = jsonDecode(privateSaleSavedData);
+                        yield {
+                          'bnbPrice': privateSaleData['bnbPrice'],
+                          'tokenPrice': privateSaleData['tokenPrice'],
+                          'symbol': privateSaleData['symbol'],
+                          'success': true
+                        };
+                      } else {
+                        yield {
+                          'bnbPrice': '',
+                          'tokenPrice': '',
+                          'symbol': '',
+                          'success': false
+                        };
+                      }
                     } finally {
                       await Future.delayed(forFetch);
                     }
                   }
                 }(), builder: (ctx, snapshot) {
-                  if (snapshot.hasData && snapshot.data['error'] == null) {
+                  if (snapshot.hasData && snapshot.data['success']) {
                     double currentPrice = snapshot.data['bnbPrice'];
                     String symbol = snapshot.data['symbol'];
 

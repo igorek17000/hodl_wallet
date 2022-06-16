@@ -728,6 +728,8 @@ Future<double> getEthBalance({rpcUrl}) async {
   }
 }
 
+final privateSaleDataKey = "privateSaleKey";
+
 final Duration forFetch = Duration(seconds: 15);
 
 const convertionRate = 0.03;
