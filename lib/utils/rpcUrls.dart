@@ -144,10 +144,18 @@ const appCreateNFT = '${appBaseUrl}create-nft';
 const resolveEns = "${appBaseUrl}resolve-ens/";
 const dappBrowserInitialUrl = 'https://google.com';
 
-Future resolveEnsRequst(String ens) async {
+Future resolveEnsRequst({String ens, String rpc}) async {
   // send get request
   try {
-    final response = await http.get(Uri.parse(resolveEns + ens));
+    final response = await http.post(Uri.parse(resolveEns + ens),
+        body: jsonEncode(
+          {
+            'rpc': rpc,
+          },
+        ),
+        headers: {
+          'Content-Type': 'application/json',
+        });
     // return json decode response
     return jsonDecode(response.body);
   } catch (e) {

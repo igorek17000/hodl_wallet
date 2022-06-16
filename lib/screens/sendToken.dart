@@ -86,9 +86,10 @@ class _SendTokenState extends State<SendToken> {
                                   content: Text("Resolving ENS name"),
                                 ));
                                 var address = await resolveEnsRequst(
-                                    recipientAddressController.text.trim());
+                                  ens: recipientAddressController.text.trim(),
+                                  rpc: widget.data['rpc'],
+                                );
 
-                                print(address);
                                 if (address['success']) {
                                   ensAddress = address['msg'];
                                 } else {
