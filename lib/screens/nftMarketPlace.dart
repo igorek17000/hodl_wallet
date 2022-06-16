@@ -105,7 +105,7 @@ class _NFTMarketPlaceState extends State<NFTMarketPlace> {
                   print(e.toString() + ' o o');
                   yield [];
                 }
-                await Future.delayed(Duration(minutes: 1));
+                await Future.delayed(forFetch);
               }
             }(), builder: (context, snapshot) {
               if (snapshot.hasError) print(snapshot.error);

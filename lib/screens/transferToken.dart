@@ -336,7 +336,7 @@ class _TransferTokenState extends State<TransferToken> {
                             var getBitCoinDetails =
                                 await getBitCoinFromMemnomic(seedPhrase);
                             yield {'address': getBitCoinDetails['address']};
-                            await Future.delayed(Duration(minutes: 1));
+                            await Future.delayed(forFetch);
                             return;
                           }
                           if (widget.data['default'] == 'BTCTEST') {
@@ -344,28 +344,28 @@ class _TransferTokenState extends State<TransferToken> {
                                 await getBitCoinFromMemnomic(seedPhrase,
                                     istestnet: true);
                             yield {'address': getBitCoinDetails['address']};
-                            await Future.delayed(Duration(minutes: 1));
+                            await Future.delayed(forFetch);
                             return;
                           }
                           if (widget.data['default'] == 'LTC') {
                             var getLitecoinDetails =
                                 await getLiteCoinFromMemnomic(seedPhrase);
                             yield {'address': getLitecoinDetails['address']};
-                            await Future.delayed(Duration(minutes: 1));
+                            await Future.delayed(forFetch);
                             return;
                           }
                           if (widget.data['default'] == 'DOGE') {
                             var getDogecoinDetails =
                                 await getDogeCoinFromMemnomic(seedPhrase);
                             yield {'address': getDogecoinDetails['address']};
-                            await Future.delayed(Duration(minutes: 1));
+                            await Future.delayed(forFetch);
                             return;
                           }
                           yield {
                             'address': (await getCryptoKeys(
                                 seedPhrase))['eth_wallet_address']
                           };
-                          await Future.delayed(Duration(minutes: 1));
+                          await Future.delayed(forFetch);
                         }
                       }(), builder: (context, snapshot) {
                         return Flexible(

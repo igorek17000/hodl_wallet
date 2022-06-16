@@ -75,7 +75,7 @@ class _BuyNFTState extends State<BuyNFT> {
                     'transactionFeeDouble': (transactionFee / pow(10, 18)),
                     'userTotalBalance': userBalance
                   };
-                  await Future.delayed(Duration(minutes: 1));
+                  await Future.delayed(forFetch);
                 }
               }(), builder: (context, snapshot) {
                 if (snapshot.hasError)

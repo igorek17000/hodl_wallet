@@ -62,7 +62,7 @@ class _ReceiveTokenState extends State<ReceiveToken> {
           (await SharedPreferences.getInstance())
               .setString('address', response['eth_wallet_address']);
           yield {'address': response['eth_wallet_address']};
-          await Future.delayed(Duration(minutes: 1));
+          await Future.delayed(forFetch);
         }
       }(), builder: (context, snapshot) {
         if (snapshot.hasError) print(snapshot.error.toString() + 'error here');

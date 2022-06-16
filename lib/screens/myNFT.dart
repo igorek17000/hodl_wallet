@@ -106,7 +106,7 @@ class _MyNFTState extends State<MyNFT> {
                       print(e);
                       yield [];
                     }
-                    await Future.delayed(Duration(minutes: 1));
+                    await Future.delayed(forFetch);
                   }
                 }(), builder: (context, snapshot) {
                   if (snapshot.hasError) print(snapshot.error);

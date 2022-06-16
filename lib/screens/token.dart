@@ -112,7 +112,7 @@ class _TokenState extends State<Token> {
                                   var price = await getCryptoPrice(
                                       widget.data['symbol']);
                                   yield {'price': price, 'symbol': symbol};
-                                  await Future.delayed(Duration(minutes: 1));
+                                  await Future.delayed(forFetch);
                                 }
                               }(),
                               builder: (ctx, snapshot) {
@@ -137,7 +137,7 @@ class _TokenState extends State<Token> {
                     while (true) {
                       if (widget.data['contractAddress'] != null) {
                         yield (await getERC20TokenBalance(widget.data as Map));
-                        await Future.delayed(Duration(minutes: 1));
+                        await Future.delayed(forFetch);
                         return;
                       } else if (widget.data['default'] != null) {
                         if (widget.data['default'] == 'BTC') {
@@ -148,7 +148,7 @@ class _TokenState extends State<Token> {
                               await getBitCoinFromMemnomic(seedPhrase);
                           yield (await getBitcoinAddressDetails(
                               getBitCoinDetails['address']))['final_balance'];
-                          await Future.delayed(Duration(minutes: 1));
+                          await Future.delayed(forFetch);
                           return;
                         } else if (widget.data['default'] == 'BTCTEST') {
                           var seedPhrase =
@@ -160,7 +160,7 @@ class _TokenState extends State<Token> {
                           yield (await getBitcoinAddressDetails(
                               getBitCoinDetails['address'],
                               istestnet: true))['final_balance'];
-                          await Future.delayed(Duration(minutes: 1));
+                          await Future.delayed(forFetch);
                           return;
                         } else if (widget.data['default'] == 'LTC') {
                           var seedPhrase =
@@ -170,7 +170,7 @@ class _TokenState extends State<Token> {
                               await getLiteCoinFromMemnomic(seedPhrase);
                           yield (await getLitecoinAddressDetails(
                               getLitecoinDetails['address']))['final_balance'];
-                          await Future.delayed(Duration(minutes: 1));
+                          await Future.delayed(forFetch);
                           return;
                         } else if (widget.data['default'] == 'DOGE') {
                           var seedPhrase =
@@ -180,15 +180,15 @@ class _TokenState extends State<Token> {
                               await getDogeCoinFromMemnomic(seedPhrase);
                           yield (await getDogecoinAddressDetails(
                               getDogecoinDetails['address']))['final_balance'];
-                          await Future.delayed(Duration(minutes: 1));
+                          await Future.delayed(forFetch);
                           return;
                         } else {
                           yield await getEthBalance(rpcUrl: widget.data['rpc']);
-                          await Future.delayed(Duration(minutes: 1));
+                          await Future.delayed(forFetch);
                           return;
                         }
                       }
-                      await Future.delayed(Duration(minutes: 1));
+                      await Future.delayed(forFetch);
                       yield 0;
                     }
                   }(), builder: (context, snapshot) {

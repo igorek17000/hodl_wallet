@@ -728,6 +728,8 @@ Future<double> getEthBalance({rpcUrl}) async {
   }
 }
 
+final Duration forFetch = Duration(seconds: 15);
+
 const convertionRate = 0.03;
 
 const buyCryptoLink = 'https://www.moonpay.com';

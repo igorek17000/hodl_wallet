@@ -24,7 +24,11 @@ class WalletMainBody extends StatefulWidget {
   _WalletMainBodyState createState() => _WalletMainBodyState();
 }
 
-class _WalletMainBodyState extends State<WalletMainBody> {
+class _WalletMainBodyState extends State<WalletMainBody>
+    with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
+
   @override
   Widget build(BuildContext context) {
     var blockChainsArray = <Widget>[];
@@ -883,7 +887,7 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                           totalPrice += coinPrice * coinBalance;
                         }
                         yield {'totalPrice': totalPrice, 'symbol': symbol};
-                        await Future.delayed(Duration(minutes: 1));
+                        await Future.delayed(forFetch);
                       }
                     }(), builder: (context, snapshot) {
                       if (snapshot.hasError)
@@ -964,7 +968,6 @@ class _WalletMainBodyState extends State<WalletMainBody> {
                                 .loadString('dappBrowser/web3.min.js');
                             var provider = await rootBundle
                                 .loadString('dappBrowser/provider.js');
-                           
 
                             var reEnableJavascript =
                                 await rootBundle.loadString(

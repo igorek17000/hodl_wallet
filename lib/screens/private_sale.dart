@@ -22,8 +22,10 @@ class private_sale extends StatefulWidget {
   _private_saleState createState() => _private_saleState();
 }
 
-class _private_saleState extends State<private_sale> {
+class _private_saleState extends State<private_sale>
+    with AutomaticKeepAliveClientMixin {
   bool isLoading = false;
+  var error = '';
   var bnbAmountController = TextEditingController()..text = '1';
   var bnbPrice =
       'https://api.binance.com/api/v3/klines?symbol=BNBUSDT&interval=1m&limit=1';
@@ -90,42 +92,51 @@ class _private_saleState extends State<private_sale> {
               SizedBox(
                 height: 20,
               ),
-              StreamBuilder<Map>(stream: () async* {
+              StreamBuilder(stream: () async* {
                 while (true) {
-                  final client = web3.Web3Client(
-                    getBlockChains()[walletContractNetwork]['rpc'],
-                    Client(),
-                  );
-                  final contract = web3.DeployedContract(
-                      web3.ContractAbi.fromJson(erc20Abi, 'MetaCoin'),
-                      web3.EthereumAddress.fromHex(tokenContractAddress));
+                  try {
+                    final client = web3.Web3Client(
+                      getBlockChains()[walletContractNetwork]['rpc'],
+                      Client(),
+                    );
+                    final contract = web3.DeployedContract(
+                        web3.ContractAbi.fromJson(erc20Abi, ''),
+                        web3.EthereumAddress.fromHex(tokenContractAddress));
 
-                  final tokenPriceFunction = contract.function('viewSale');
+                    final tokenPriceFunction = contract.function('viewSale');
 
-                  final tokenPrice = await client.call(
-                      contract: contract,
-                      function: tokenPriceFunction,
-                      params: []);
-                  var bnbPrice = await getCryptoPrice('BNB');
-                  var tokenPriceDouble =
-                      pow(10, 18) / double.parse(tokenPrice[3].toString());
+                    final tokenPrice = await client.call(
+                        contract: contract,
+                        function: tokenPriceFunction,
+                        params: []);
+                    var bnbPrice = await getCryptoPrice('BNB');
+                    var tokenPriceDouble =
+                        pow(10, 18) / double.parse(tokenPrice[3].toString());
 
-                  var currencyWithSymbol = jsonDecode(
-                      await rootBundle.loadString('json/currency_symbol.json'));
-                  var defaultCurrency = (await SharedPreferences.getInstance())
-                          .getString('defaultCurrency') ??
-                      "USD";
-                  var symbol = (currencyWithSymbol[defaultCurrency]['symbol']);
+                    var currencyWithSymbol = jsonDecode(await rootBundle
+                        .loadString('json/currency_symbol.json'));
+                    var defaultCurrency =
+                        (await SharedPreferences.getInstance())
+                                .getString('defaultCurrency') ??
+                            "USD";
+                    var symbol =
+                        (currencyWithSymbol[defaultCurrency]['symbol']);
 
-                  yield {
-                    'bnbPrice': bnbPrice,
-                    'tokenPrice': tokenPriceDouble,
-                    'symbol': symbol
-                  };
-                  await Future.delayed(Duration(minutes: 1));
+                    yield {
+                      'bnbPrice': bnbPrice,
+                      'tokenPrice': tokenPriceDouble,
+                      'symbol': symbol
+                    };
+                  } catch (e) {
+                    yield {
+                      'error': e.toString(),
+                    };
+                  } finally {
+                    await Future.delayed(forFetch);
+                  }
                 }
               }(), builder: (ctx, snapshot) {
-                if (snapshot.hasData) {
+                if (snapshot.hasData && snapshot.data['error'] == null) {
                   double currentPrice = snapshot.data['bnbPrice'];
                   String symbol = snapshot.data['symbol'];
 
@@ -490,4 +501,8 @@ class _private_saleState extends State<private_sale> {
       ),
     ));
   }
+
+  @override
+  // TODO: implement wantKeepAlive
+  bool get wantKeepAlive => true;
 }

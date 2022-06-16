@@ -13,10 +13,26 @@ class Wallet extends StatefulWidget {
 bool isDarkMode = true;
 
 class _WalletState extends State<Wallet> {
+  PageController pageController;
   var currentIndex_ = 0;
   @override
   void initState() {
     super.initState();
+    pageController = PageController(initialPage: 0);
+  }
+
+  _onTapped(int index) {
+    setState(() {
+      currentIndex_ = index;
+    });
+    pageController.animateToPage(index,
+        duration: Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  void onPageChanged(int index) {
+    setState(() {
+      currentIndex_ = index;
+    });
   }
 
   var pages = [
@@ -28,42 +44,38 @@ class _WalletState extends State<Wallet> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: appBackground,
-        currentIndex: currentIndex_,
-        onTap: (index) {
-          setState(() {
-            currentIndex_ = index;
-          });
-        },
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.account_balance_wallet,
-              size: 30,
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: appBackground,
+          currentIndex: currentIndex_,
+          onTap: _onTapped,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.account_balance_wallet,
+                size: 30,
+              ),
+              label: 'Wallet',
             ),
-            label: 'Wallet',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.swap_horiz,
-              size: 40,
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.swap_horiz,
+                size: 40,
+              ),
+              label: 'Swap',
             ),
-            label: 'Swap',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(
-              Icons.settings,
-              size: 30,
+            BottomNavigationBarItem(
+              icon: Icon(
+                Icons.settings,
+                size: 30,
+              ),
+              label: 'Settings',
             ),
-            label: 'Settings',
-          ),
-        ],
-      ),
-      body: IndexedStack(
-        index: currentIndex_,
-        children: pages,
-      ),
-    );
+          ],
+        ),
+        body: PageView(
+          controller: pageController,
+          onPageChanged: onPageChanged,
+          children: pages,
+        ));
   }
 }
