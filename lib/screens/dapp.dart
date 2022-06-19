@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_launcher_icons/xml_templates.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share/share.dart';
@@ -39,7 +40,7 @@ class _dappState extends State<dapp> {
   String urlLoaded = '';
   final Set<Factory> gestureRecognizers =
       [Factory(() => EagerGestureRecognizer())].toSet();
-  WebViewController _controller;
+  InAppWebViewController _controller;
 
   @override
   Widget build(BuildContext context) {
@@ -86,12 +87,17 @@ class _dappState extends State<dapp> {
                       if (_controller != null) {
                         if (value.startsWith('https://') ||
                             value.startsWith('http://')) {
-                          await _controller.loadUrl(value);
+                          await _controller.loadUrl(
+                              urlRequest: URLRequest(url: Uri.parse(value)));
                         } else if (isURL('http://${value}'.trim())) {
-                          await _controller.loadUrl('http://${value}');
+                          await _controller.loadUrl(
+                              urlRequest: URLRequest(
+                                  url: Uri.parse('http://${value}')));
                         } else {
                           await _controller.loadUrl(
-                              'https://www.google.com/search?q=${value}');
+                              urlRequest: URLRequest(
+                                  url: Uri.parse(
+                                      'https://www.google.com/search?q=${value}')));
                         }
                       }
                     },
@@ -307,215 +313,37 @@ class _dappState extends State<dapp> {
             child: Container(
               height: double.infinity,
               width: double.infinity,
-              child: WebView(
-                navigationDelegate: (action) {
-                  if (action.isForMainFrame) {
-                    return NavigationDecision.navigate;
-                  }
-                  return NavigationDecision.prevent;
+              child: InAppWebView(
+                initialUrlRequest:
+                    URLRequest(url: Uri.parse(dappBrowserInitialUrl)),
+                initialOptions: InAppWebViewGroupOptions(
+                  crossPlatform: InAppWebViewOptions(
+                    useShouldOverrideUrlLoading: true,
+                  ),
+                ),
+                onWebViewCreated: (controller) {
+                  _controller = controller;
+                  _controller.addJavaScriptHandler(
+                      handlerName: 'dapp',
+                      callback: (args) {
+                        print(args);
+                      });
                 },
-                onProgress: (precent) {
+                onLoadStop: (InAppWebViewController controller, Uri url) {
+                  _controller.evaluateJavascript(source: '''
+                window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
+                    window.flutter_inappwebview.callHandler('dapp', 12, 2, 50).then(function(result) {
+                        console.log(result);
+                      });
+                    });
+                ''');
+                },
+                onProgressChanged:
+                    (InAppWebViewController controller, int progress) {
                   setState(() {
-                    browserLoadingPercent = precent / 100;
+                    browserLoadingPercent = progress / 100;
                   });
                 },
-                onWebViewCreated: (controller) async {
-                  _controller = controller;
-                },
-                initialUrl: widget.data ?? dappBrowserInitialUrl,
-                debuggingEnabled: true,
-                onPageStarted: (url) async {
-                  dappBrowser.text = url;
-                  if (urlLoaded == '') {
-                    urlLoaded = url;
-                  }
-                },
-                onPageFinished: (url) async {
-                  try {
-                    if (urlLoaded == '') {
-                      return;
-                    } else {
-                      urlLoaded = '';
-                    }
-                    await _controller.runJavascript(widget.sweetAlert);
-                    await _controller.runJavascript(widget.web3);
-                    await _controller.runJavascript(widget.provider);
-
-                    var favicon =
-                        await _controller.runJavascriptReturningResult('''
-                        var getFavicon = function(){
-                            var favicon = undefined;
-                            var nodeList = document.getElementsByTagName("link");
-                            for (var i = 0; i < nodeList.length; i++)
-                            {
-                                if((nodeList[i].getAttribute("rel") == "icon")||(nodeList[i].getAttribute("rel") == "shortcut icon"))
-                                {
-                                    favicon = nodeList[i].getAttribute("href");
-
-                                }
-                            }
-
-                            return new URL(favicon, document.baseURI).href;        
-                        }
-
-                        getFavicon();
-                        ''');
-
-                    favicon = favicon.split('"').join('').split("'").join('');
-                    await showDialog(
-                      barrierDismissible: false,
-                      context: context,
-                      builder: (_) {
-                        return SimpleDialog(
-                          title: Column(
-                            children: [
-                              if (true)
-                                Container(
-                                  height: 100.0,
-                                  width: 100.0,
-                                  padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Image.network(favicon),
-                                ),
-                              Text(url),
-                            ],
-                          ),
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(16.0, 12.0, 16.0, 16.0),
-                          children: [
-                            if (url.isNotEmpty)
-                              Padding(
-                                padding: const EdgeInsets.only(bottom: 8.0),
-                                child: Text('Connection to ${url}'),
-                              ),
-                            Row(
-                              children: [
-                                Expanded(
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                    onPressed: () async {
-                                      showDialog(
-                                          barrierDismissible: false,
-                                          context: context,
-                                          builder: (context) {
-                                            var ethEnabledBlockChain =
-                                                <Widget>[];
-                                            for (String i
-                                                in getBlockChains().keys) {
-                                              ethEnabledBlockChain.add(InkWell(
-                                                onTap: () async {
-                                                  var count = 0;
-                                                  var seedPhrase =
-                                                      (await SharedPreferences
-                                                              .getInstance())
-                                                          .getString(
-                                                              'mmemomic');
-                                                  await _controller
-                                                      .runJavascript('''
-                                                        window.web3 = new Web3(
-                                                                new HDWalletProvider({
-                                                                  mnemonic: {
-                                                                    phrase:
-                                                                      "${seedPhrase}",
-                                                                  },
-                                                                  providerOrUrl: "${getBlockChains()[i]['rpc']}",
-                                                                  chainId: ${getBlockChains()[i]['chainId']},
-                                                                })
-                                                              );
-                                                        ''');
-                                                  Navigator.popUntil(context,
-                                                      (route) {
-                                                    return count++ == 2;
-                                                  });
-                                                },
-                                                child: buildRow(
-                                                    getBlockChains()[i]
-                                                                ['image'] !=
-                                                            null
-                                                        ? getBlockChains()[i]
-                                                            ['image']
-                                                        : 'assets/ethereum_logo.png',
-                                                    i),
-                                              ));
-                                            }
-                                            return Dialog(
-                                                shape: RoundedRectangleBorder(
-                                                    borderRadius:
-                                                        BorderRadius.circular(
-                                                            40)),
-                                                elevation: 16,
-                                                child: Container(
-                                                  child: ListView(
-                                                    shrinkWrap: true,
-                                                    children: <Widget>[
-                                                      SizedBox(height: 20),
-                                                      Center(
-                                                          child: Text(
-                                                              'Select BlockChains')),
-                                                      SizedBox(height: 20),
-                                                    ]..addAll(
-                                                        ethEnabledBlockChain),
-                                                  ),
-                                                ));
-                                          });
-                                    },
-                                    child: Text('APPROVE'),
-                                  ),
-                                ),
-                                const SizedBox(width: 16.0),
-                                Expanded(
-                                  child: TextButton(
-                                    style: TextButton.styleFrom(
-                                      primary: Colors.white,
-                                      backgroundColor: Theme.of(context)
-                                          .colorScheme
-                                          .secondary,
-                                    ),
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('REJECT'),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        );
-                      },
-                    );
-
-                    // await _controller.runJavascript(
-                    //     'document.documentElement.innerHTML = document.documentElement.innerHTML');
-                    // await _controller.runJavascript(widget.reEnableJavascript);
-                    // await _controller.runJavascript('''
-                    // var load_event = document.createEvent("HTMLEvents");
-                    // load_event.initEvent("DOMContentLoaded", true, true);
-                    // window.document.dispatchEvent(load_event);
-                    // ''');
-                    // await _controller.runJavascript('''
-                    //   var load_event = document.createEvent("HTMLEvents");
-                    //   load_event.initEvent("load", true, true);
-                    //   window.document.dispatchEvent(load_event);
-                    //   ''');
-
-                    await _controller.runJavascript('''
-                    (async function () {
-                            const account = (await web3.eth.getAccounts())[0];
-                            console.log('web3 dapp browser: ' + account);
-                    })();''');
-
-                    print('end of function');
-                  } catch (e) {
-                    print(e);
-                  }
-                },
-                javascriptMode: JavascriptMode.unrestricted,
-                gestureNavigationEnabled: true,
-                gestureRecognizers: gestureRecognizers,
               ),
             ),
           ),
