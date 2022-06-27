@@ -546,8 +546,10 @@ Future<String> getCryptoPrice() async {
   try {
     String defaultCurrency = storedKey.getString('defaultCurrency') ?? "usd";
     var responseBody = (await get(Uri.parse(
-            'https://api.coingecko.com/api/v3/simple/price?ids=${allCrypto}&vs_currencies=${defaultCurrency}')))
+            'https://api.coingecko.com/api/v3/simple/price?ids=${allCrypto}&vs_currencies=${defaultCurrency}&include_24hr_change=true')))
         .body;
+
+    print(responseBody);
 
     await storedKey.setString('cryptoPrices', responseBody);
     return responseBody;
@@ -558,8 +560,6 @@ Future<String> getCryptoPrice() async {
     return null;
   }
 }
-
-
 
 Future<double> getERC20TokenBalance(Map element) async {
   final client = web3.Web3Client(

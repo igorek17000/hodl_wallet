@@ -41,135 +41,203 @@ class _WalletMainBodyState extends State<WalletMainBody>
         },
         child: SingleChildScrollView(
           child: StreamBuilder(stream: () async* {
-            var allCryptoPrice = jsonDecode(await getCryptoPrice()) as Map;
-            var seedPhrase =
-                (await SharedPreferences.getInstance()).getString('mmemomic');
-            var currencyWithSymbol = jsonDecode(
-                await rootBundle.loadString('json/currency_symbol.json'));
-            var defaultCurrency = (await SharedPreferences.getInstance())
-                    .getString('defaultCurrency') ??
-                "USD";
-            var symbol = currencyWithSymbol[defaultCurrency]['symbol'];
+            while (true) {
+              blockChainsArray = <Widget>[];
+              var allCryptoPrice = jsonDecode(await getCryptoPrice()) as Map;
+              var seedPhrase =
+                  (await SharedPreferences.getInstance()).getString('mmemomic');
+              var currencyWithSymbol = jsonDecode(
+                  await rootBundle.loadString('json/currency_symbol.json'));
+              var defaultCurrency = (await SharedPreferences.getInstance())
+                      .getString('defaultCurrency') ??
+                  "USD";
+              var symbol = currencyWithSymbol[defaultCurrency]['symbol'];
 
-            blockChainsArray.addAll([
-              InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (ctx) => Token(data: const {
-                                  'name': 'BitCoin',
-                                  'symbol': 'BTC',
-                                  'default': 'BTC',
-                                  'block explorer':
-                                      'https://www.blockchain.com/btc'
-                                })));
-                  },
-                  child: getBlockChainWidget(
-                    name: 'Bitcoin',
-                    image: AssetImage('assets/bitcoin.png'),
-                    priceWithCurrency: symbol +
-                        formatMoney(
-                            allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
-                                [defaultCurrency.toLowerCase()]),
-                    cryptoChange: 'change',
-                    // cryptoAmountWidget:,
-                    cryptoAmount: 'ello',
-                  )),
-              Divider(),
-              // child: Container())
-            ]);
+              blockChainsArray.addAll([
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => Token(data: const {
+                                    'name': 'BitCoin',
+                                    'symbol': 'BTC',
+                                    'default': 'BTC',
+                                    'block explorer':
+                                        'https://www.blockchain.com/btc'
+                                  })));
+                    },
+                    child: getBlockChainWidget(
+                      name: 'Bitcoin',
+                      image: const AssetImage('assets/bitcoin.png'),
+                      priceWithCurrency: symbol +
+                          formatMoney(
+                              allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
+                                  [defaultCurrency.toLowerCase()]),
+                      cryptoChange:
+                          allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
+                              [defaultCurrency.toLowerCase() + '_24h_change'],
+                      cryptoAmount: StreamBuilder(stream: () async* {
+                        while (true) {
+                          var getBitCoinDetails =
+                              await getBitCoinFromMemnomic(seedPhrase);
+                          yield (await getBitcoinAddressDetails(
+                              getBitCoinDetails['address']))['final_balance'];
+                          await Future.delayed(forFetch);
+                        }
+                      }(), builder: (context, snapshot) {
+                        return Text(
+                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
+                              ' BTC',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }),
+                    )),
+                Divider(),
+              ]);
 
-            for (String i in getBlockChains().keys) {
-              blockChainsArray.add(InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (ctx) => Token(data: {
-                                  'name': i,
-                                  'symbol': getBlockChains()[i]['symbol'],
-                                  'default': getBlockChains()[i]['symbol'],
-                                  'block explorer': getBlockChains()[i]
-                                      ['block explorer'],
-                                  'rpc': getBlockChains()[i]['rpc'],
-                                  'chainId': getBlockChains()[i]['chainId'],
-                                })));
-                  },
-                  child: getBlockChainWidget(
-                    name: i,
-                    image: AssetImage(getBlockChains()[i]['image'] != null
-                        ? getBlockChains()[i]['image']
-                        : 'assets/ethereum_logo.png'),
-                    priceWithCurrency: symbol +
-                        formatMoney(allCryptoPrice[coinGeckCryptoSymbolToID[
-                                getBlockChains()[i]['symbol']]]
-                            [defaultCurrency.toLowerCase()]),
-                    cryptoChange: 'change',
-                    // cryptoAmountWidget:,
-                    cryptoAmount: 'ello',
-                  )));
+              for (String i in getBlockChains().keys) {
+                blockChainsArray.add(InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => Token(data: {
+                                    'name': i,
+                                    'symbol': getBlockChains()[i]['symbol'],
+                                    'default': getBlockChains()[i]['symbol'],
+                                    'block explorer': getBlockChains()[i]
+                                        ['block explorer'],
+                                    'rpc': getBlockChains()[i]['rpc'],
+                                    'chainId': getBlockChains()[i]['chainId'],
+                                  })));
+                    },
+                    child: getBlockChainWidget(
+                      name: i,
+                      image: AssetImage(getBlockChains()[i]['image'] ??
+                          'assets/ethereum_logo.png'),
+                      priceWithCurrency: symbol +
+                          formatMoney(allCryptoPrice[coinGeckCryptoSymbolToID[
+                                  getBlockChains()[i]['symbol']]]
+                              [defaultCurrency.toLowerCase()]),
+                      cryptoChange: allCryptoPrice[coinGeckCryptoSymbolToID[
+                              getBlockChains()[i]['symbol']]]
+                          [defaultCurrency.toLowerCase() + '_24h_change'],
+                      cryptoAmount: StreamBuilder(stream: () async* {
+                        while (true) {
+                          yield await getEthBalance(
+                              rpcUrl: getBlockChains()[i]['rpc']);
+                          await Future.delayed(forFetch);
+                        }
+                      }(), builder: (ctx, snapshot) {
+                        return Text(
+                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
+                              ' ${getBlockChains()[i]['symbol']}',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }),
+                    )));
 
-              blockChainsArray.add(Divider());
+                blockChainsArray.add(Divider());
+              }
+
+              blockChainsArray.addAll([
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => Token(data: const {
+                                    'name': 'Litecoin',
+                                    'symbol': 'LTC',
+                                    'default': 'LTC',
+                                    'block explorer':
+                                        'https://live.blockcypher.com/ltc'
+                                  })));
+                    },
+                    child: getBlockChainWidget(
+                      name: 'Litecoin',
+                      image: const AssetImage('assets/litecoin.png'),
+                      priceWithCurrency: symbol +
+                          formatMoney(
+                              allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
+                                  [defaultCurrency.toLowerCase()]),
+                      cryptoChange:
+                          allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
+                              [defaultCurrency.toLowerCase() + '_24h_change'],
+                      cryptoAmount: StreamBuilder(stream: () async* {
+                        while (true) {
+                          var getLitecoinDetails =
+                              await getLiteCoinFromMemnomic(seedPhrase);
+                          yield (await getLitecoinAddressDetails(
+                              getLitecoinDetails['address']))['final_balance'];
+                          await Future.delayed(forFetch);
+                        }
+                      }(), builder: (context, snapshot) {
+                        return Text(
+                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
+                              ' LTC',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }),
+                    )),
+                Divider(),
+              ]);
+
+              blockChainsArray.addAll([
+                InkWell(
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (ctx) => Token(data: const {
+                                    'name': 'Dogecoin',
+                                    'symbol': 'DOGE',
+                                    'default': 'DOGE',
+                                    'block explorer': 'https://dogechain.info'
+                                  })));
+                    },
+                    child: getBlockChainWidget(
+                      name: 'Dogecoin',
+                      image: const AssetImage('assets/dogecoin.png'),
+                      priceWithCurrency: symbol +
+                          formatMoney(
+                              allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
+                                  [defaultCurrency.toLowerCase()]),
+                      cryptoChange:
+                          allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
+                              [defaultCurrency.toLowerCase() + '_24h_change'],
+                      cryptoAmount: StreamBuilder(stream: () async* {
+                        while (true) {
+                          var getDogeCoinDetails =
+                              await getDogeCoinFromMemnomic(seedPhrase);
+                          yield (await getDogecoinAddressDetails(
+                              getDogeCoinDetails['address']))['final_balance'];
+                          await Future.delayed(forFetch);
+                        }
+                      }(), builder: (context, snapshot) {
+                        return Text(
+                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
+                              ' DOGE',
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500),
+                          overflow: TextOverflow.ellipsis,
+                        );
+                      }),
+                    )),
+                Divider(),
+              ]);
+              yield {};
+              await Future.delayed(forFetch);
             }
-
-            blockChainsArray.addAll([
-              InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (ctx) => Token(data: const {
-                                  'name': 'Litecoin',
-                                  'symbol': 'LTC',
-                                  'default': 'LTC',
-                                  'block explorer':
-                                      'https://live.blockcypher.com/ltc'
-                                })));
-                  },
-                  child: getBlockChainWidget(
-                    name: 'Litecoin',
-                    image: AssetImage('assets/litecoin.png'),
-                    priceWithCurrency: symbol +
-                        formatMoney(
-                            allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
-                                [defaultCurrency.toLowerCase()]),
-                    cryptoChange: 'change',
-                    // cryptoAmountWidget:,
-                    cryptoAmount: 'ello',
-                  )),
-              Divider(),
-              // child: Container())
-            ]);
-
-            blockChainsArray.addAll([
-              InkWell(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (ctx) => Token(data: const {
-                                  'name': 'Dogecoin',
-                                  'symbol': 'DOGE',
-                                  'default': 'DOGE',
-                                  'block explorer': 'https://dogechain.info'
-                                })));
-                  },
-                  child: getBlockChainWidget(
-                    name: 'Dogecoin',
-                    image: AssetImage('assets/dogecoin.png'),
-                    priceWithCurrency: symbol +
-                        formatMoney(
-                            allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
-                                [defaultCurrency.toLowerCase()]),
-                    cryptoChange: 'change',
-                    // cryptoAmountWidget:,
-                    cryptoAmount: 'ello',
-                  )),
-              Divider(),
-              // child: Container())
-            ]);
           }(), builder: (context, snapshot) {
+            if (snapshot.hasError) print(snapshot.error);
             return Padding(
               padding: const EdgeInsets.all(25),
               child: Column(

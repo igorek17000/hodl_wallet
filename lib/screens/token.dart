@@ -117,8 +117,6 @@ class _TokenState extends State<Token> {
                                                   widget.data['symbol']]]
                                           [defaultCurrency.toLowerCase()];
 
-                                  print(price);
-
                                   yield {'price': price, 'symbol': symbol};
                                   await Future.delayed(forFetch);
                                 }

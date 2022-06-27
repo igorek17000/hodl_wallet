@@ -1,3 +1,4 @@
+import 'package:cryptowallet/utils/format_money.dart';
 import 'package:flutter/material.dart';
 
 class getBlockChainWidget extends StatefulWidget {
@@ -11,8 +12,8 @@ class getBlockChainWidget extends StatefulWidget {
       AssetImage image,
       String name,
       String priceWithCurrency,
-      String cryptoChange,
-      String cryptoAmount})
+      double cryptoChange,
+      Widget cryptoAmount})
       : super(key: key) {
     this.image = image;
     this.name = name;
@@ -67,21 +68,16 @@ class _getBlockChainWidgetState extends State<getBlockChainWidget> {
                                     style: TextStyle(fontSize: 15),
                                   ),
                                   Text(
-                                    widget.cryptoChange,
+                                    formatMoney(widget.cryptoChange) + '%',
                                     style: TextStyle(
                                         fontSize: 12,
-                                        color: true
+                                        color: (widget.cryptoChange < 0)
                                             ? Color(0xffeb6a61)
                                             : Color(0xff01aa78)),
                                   )
                                 ],
                               ),
-                              Text(
-                                widget.cryptoAmount,
-                                style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                              widget.cryptoAmount
                             ],
                           )),
                         ],
