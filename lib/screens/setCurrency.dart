@@ -98,22 +98,9 @@ class _setCurrencyState extends State<setCurrency> {
                     for (var currency in currencyList.keys) {
                       currencyWidget.add(InkWell(
                         onTap: () async {
-                          _scaffoldKey.currentState.showSnackBar(
-                              SnackBar(content: Text('Currency loading')));
-                          if (await getCurrencyPriceFromUSD(currency) == null ||
-                              !(await isInternetConnected())) {
-                            _scaffoldKey.currentState.showSnackBar(SnackBar(
-                                content:
-                                    Text('Currency Conversion not available')));
-                            return;
-                          }
                           var pref = await SharedPreferences.getInstance();
-                          await pref.setString('defaultCurrency', currency);
-                          for (String i in getBlockChains().keys) {
-                            await getCryptoPrice(getBlockChains()[i]['symbol']);
-                          }
-                          _scaffoldKey.currentState.showSnackBar(
-                              SnackBar(content: Text('Currency Changed')));
+                          await pref.setString('defaultCurrency',
+                              currency.toString().toLowerCase());
                           setState(() {});
                         },
                         child: Row(

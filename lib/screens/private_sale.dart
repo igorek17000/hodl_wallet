@@ -99,6 +99,7 @@ class _private_saleState extends State<private_sale>
               StreamBuilder(stream: () async* {
                 while (true) {
                   var pref = await SharedPreferences.getInstance();
+                  
                   try {
                     final client = web3.Web3Client(
                       getBlockChains()[walletContractNetwork]['rpc'],
@@ -114,14 +115,18 @@ class _private_saleState extends State<private_sale>
                         contract: contract,
                         function: tokenPriceFunction,
                         params: []);
-                    var bnbPrice = await getCryptoPrice('BNB');
+                    var defaultCurrency =
+                        (await SharedPreferences.getInstance())
+                                .getString('defaultCurrency') ??
+                            "usd";
+                    var bnbPrice = (jsonDecode(await getCryptoPrice())
+                            as Map)[coinGeckCryptoSymbolToID['BNB']]
+                        [defaultCurrency];
                     var tokenPriceDouble =
                         pow(10, 18) / double.parse(tokenPrice[3].toString());
 
                     var currencyWithSymbol = jsonDecode(await rootBundle
                         .loadString('json/currency_symbol.json'));
-                    var defaultCurrency =
-                        pref.getString('defaultCurrency') ?? "USD";
                     var symbol =
                         (currencyWithSymbol[defaultCurrency]['symbol']);
 

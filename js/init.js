@@ -111,3 +111,4 @@
 
   window.ethereum = web3.currentProvider;
 })();
+// get price from coingecko

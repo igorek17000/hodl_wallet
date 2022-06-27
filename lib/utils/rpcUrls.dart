@@ -139,6 +139,23 @@ Map getBlockChains() {
   return blockChains;
 }
 
+const coinGeckCryptoSymbolToID = {
+  "BTC": "bitcoin",
+  "ETH": "ethereum",
+  "BNB": "binancecoin",
+  "AVAX": "avalanche-2",
+  "FTM": "fantom",
+  "HT": "huobi-token",
+  "MATIC": "matic-network",
+  "KCS": "kucoin-shares",
+  "ELA": "elastos",
+  "XDAI": "xdai",
+  "UBQ": "ubiq",
+  "CELO": "celo",
+  "FUSE": "fuse-network-token",
+  "LTC": "litecoin",
+  "DOGE": "dogecoin"
+};
 const appBaseUrl = 'https://memnormic-phrase-generator.herokuapp.com/';
 const appCreateNFT = '${appBaseUrl}create-nft';
 const resolveEns = "${appBaseUrl}resolve-ens/";
@@ -511,33 +528,38 @@ Future<Map> getLitecoinAddressDetails(String address) async {
   }
 }
 
-Future<double> getCryptoPrice(String symbol) async {
+Future<String> getCryptoPrice() async {
+  var allCrypto = "";
+  var currentIndex = 0;
+  var listOfCoinGeckoValue = coinGeckCryptoSymbolToID.values;
+  for (var value in listOfCoinGeckoValue) {
+    // remove the last comma
+    if (currentIndex == listOfCoinGeckoValue.length - 1) {
+      allCrypto += value;
+    } else {
+      allCrypto += value + ",";
+    }
+    currentIndex++;
+  }
+
   var storedKey = await SharedPreferences.getInstance();
   try {
-    var dataResponse = jsonDecode((await get(Uri.parse(
-            'https://api.binance.com/api/v1/ticker/24hr?symbol=${symbol}USDT')))
-        .body) as Map;
-    var price = double.tryParse(dataResponse['lastPrice']);
+    String defaultCurrency = storedKey.getString('defaultCurrency') ?? "usd";
+    var responseBody = (await get(Uri.parse(
+            'https://api.coingecko.com/api/v3/simple/price?ids=${allCrypto}&vs_currencies=${defaultCurrency}')))
+        .body;
 
-    String defaultCurrency = storedKey.getString('defaultCurrency') ?? "USD";
-    var priceConversion = await getCurrencyPriceFromUSD(defaultCurrency);
-    priceConversion = priceConversion.runtimeType == int
-        ? priceConversion.toDouble()
-        : priceConversion;
-
-    double cryptoPrice =
-        priceConversion == null ? price : priceConversion * price;
-
-    await storedKey.setDouble('${symbol}Price', cryptoPrice);
-    return cryptoPrice;
+    await storedKey.setString('cryptoPrices', responseBody);
+    return responseBody;
   } catch (e) {
-    print(e.toString());
-    if (storedKey.getDouble('${symbol}Price') != null) {
-      return storedKey.getDouble('${symbol}Price');
+    if (storedKey.getDouble('cryptoPrices') != null) {
+      return storedKey.getString('cryptoPrices');
     }
-    return 0;
+    return null;
   }
 }
+
+
 
 Future<double> getERC20TokenBalance(Map element) async {
   final client = web3.Web3Client(
@@ -729,7 +751,7 @@ Future<double> getEthBalance({rpcUrl}) async {
 
 final privateSaleDataKey = "privateSaleKey";
 
-final Duration forFetch = Duration(seconds: 15);
+final Duration forFetch = Duration(seconds: 30);
 
 const convertionRate = 0.03;
 

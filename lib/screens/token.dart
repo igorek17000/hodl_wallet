@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bitcoin_flutter/bitcoin_flutter.dart';
+import 'package:cryptowallet/screens/private_sale.dart';
 import 'package:cryptowallet/screens/receiveToken.dart';
 import 'package:cryptowallet/screens/sendToken.dart';
 import 'package:cryptowallet/utils/format_money.dart';
@@ -100,7 +101,6 @@ class _TokenState extends State<Token> {
                                   var currencyWithSymbol = jsonDecode(
                                       await rootBundle.loadString(
                                           'json/currency_symbol.json')) as Map;
-
                                   var defaultCurrency =
                                       (await SharedPreferences.getInstance())
                                               .getString('defaultCurrency') ??
@@ -109,13 +109,22 @@ class _TokenState extends State<Token> {
                                   var symbol =
                                       (currencyWithSymbol[defaultCurrency]
                                           ['symbol']);
-                                  var price = await getCryptoPrice(
-                                      widget.data['symbol']);
+
+                                  var price =
+                                      (jsonDecode(await getCryptoPrice())
+                                                  as Map)[
+                                              coinGeckCryptoSymbolToID[
+                                                  widget.data['symbol']]]
+                                          [defaultCurrency.toLowerCase()];
+
+                                  print(price);
+
                                   yield {'price': price, 'symbol': symbol};
                                   await Future.delayed(forFetch);
                                 }
                               }(),
                               builder: (ctx, snapshot) {
+                                if (snapshot.hasError) print(snapshot.error);
                                 if (snapshot.hasData) {
                                   return Text(
                                     '${(snapshot.data as Map)['symbol']}${formatMoney((snapshot.data as Map)['price'])}',
