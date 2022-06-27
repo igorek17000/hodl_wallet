@@ -331,11 +331,9 @@ class _dappState extends State<dapp> {
                 },
                 onLoadStop: (InAppWebViewController controller, Uri url) {
                   _controller.evaluateJavascript(source: '''
-                window.addEventListener("flutterInAppWebViewPlatformReady", function(event) {
                     window.flutter_inappwebview.callHandler('dapp', 12, 2, 50).then(function(result) {
                         console.log(result);
                       });
-                    });
                 ''');
                 },
                 onProgressChanged:
