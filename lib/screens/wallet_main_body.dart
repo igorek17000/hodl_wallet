@@ -345,7 +345,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                             style: TextStyle(fontSize: 20, color: Colors.grey),
                           ),
                           IconButton(
-                            onPressed: () async {},
+                            onPressed: null,
                             icon: Icon(
                               Icons.menu,
                               size: 30,
