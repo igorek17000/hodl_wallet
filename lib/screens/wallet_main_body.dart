@@ -394,12 +394,8 @@ class _WalletMainBodyState extends State<WalletMainBody>
                           ),
                           InkWell(
                             onTap: () async {
-
-                              await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (ctx) => dapp(
-                                          )));
+                              await Navigator.push(context,
+                                  MaterialPageRoute(builder: (ctx) => dapp()));
                             },
                             child: Container(
                               child: Column(
@@ -421,7 +417,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                                     height: 10,
                                   ),
                                   Text(
-                                    'Dapps   ',
+                                    'Browser ',
                                     style: TextStyle(fontSize: 15),
                                   )
                                 ],
@@ -453,7 +449,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                                     height: 10,
                                   ),
                                   Text(
-                                    'NFTs   ',
+                                    'NFT shop',
                                     style: TextStyle(fontSize: 15),
                                   )
                                 ],
