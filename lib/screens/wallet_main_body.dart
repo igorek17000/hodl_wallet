@@ -60,6 +60,8 @@ class _WalletMainBodyState extends State<WalletMainBody>
                         var allCryptoPrice =
                             jsonDecode(await getCryptoPrice()) as Map;
 
+                        print(allCryptoPrice);
+
                         var seedPhrase = (await SharedPreferences.getInstance())
                             .getString('mmemomic');
                         var currencyWithSymbol = jsonDecode(await rootBundle
@@ -318,16 +320,18 @@ class _WalletMainBodyState extends State<WalletMainBody>
                     Divider(),
                   ]);
                   yield {
-                    'symbol': symbol,
                     'seedPhrase': seedPhrase,
                     'allCryptoPrice': allCryptoPrice,
                     'blockChainsArray': blockChainsArray,
                     'defaultCurrency': defaultCurrency
                   };
+
+                  print('yes');
                   await Future.delayed(forFetch);
                 }
               }(), builder: (context, snapshot) {
-                if (snapshot.hasError) print(snapshot.error);
+                if (snapshot.hasError) print(snapshot.error.toString() + 'ok');
+
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                   child: Column(
@@ -551,13 +555,22 @@ class _WalletMainBodyState extends State<WalletMainBody>
                           });
                         }
 
+                        var currencyWithSymbol = jsonDecode(await rootBundle
+                            .loadString('json/currency_symbol.json'));
+
+                        var defaultCurrency =
+                            (await SharedPreferences.getInstance())
+                                    .getString('defaultCurrency') ??
+                                "USD";
+                        var nativeCurrency =
+                            currencyWithSymbol[defaultCurrency]['symbol'];
                         return {
                           'elementList': elementList,
-                          'symbol': snapshot.data['symbol']
+                          'nativeCurrency': nativeCurrency,
                         };
                       }(), builder: (ctx, snapshot) {
                         if (snapshot.hasError) {
-                          print(snapshot.error);
+                          print(snapshot.error.toString());
                           return Container();
                         }
 
@@ -590,7 +603,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                                       ? AssetImage(element['image'])
                                       : null,
                                   priceWithCurrency:
-                                      snapshot.data['symbol'] + '0',
+                                      snapshot.data['nativeCurrency'] + '0',
                                   cryptoChange: 0,
                                   symbol: element['symbol'],
                                   cryptoAmount: StreamBuilder(
@@ -614,6 +627,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                               Divider(),
                             );
                           });
+
                           return Column(
                             children: customTokensWidget,
                           );

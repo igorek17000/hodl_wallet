@@ -541,9 +541,11 @@ Future<String> getCryptoPrice() async {
   var storedKey = await SharedPreferences.getInstance();
   try {
     String defaultCurrency = storedKey.getString('defaultCurrency') ?? "usd";
-    var responseBody = (await get(Uri.parse(
-            'https://api.coingecko.com/api/v3/simple/price?ids=${allCrypto}&vs_currencies=${defaultCurrency}&include_24hr_change=true')))
-        .body;
+
+    var dataUrl =
+        'https://api.coingecko.com/api/v3/simple/price?ids=${allCrypto}&vs_currencies=${defaultCurrency}&include_24hr_change=true';
+
+    var responseBody = (await get(Uri.parse(dataUrl))).body;
 
     await storedKey.setString('cryptoPrices', responseBody);
     return responseBody;
