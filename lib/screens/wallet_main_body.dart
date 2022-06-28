@@ -40,534 +40,635 @@ class _WalletMainBodyState extends State<WalletMainBody>
           setState(() {});
         },
         child: SingleChildScrollView(
-          child: StreamBuilder(stream: () async* {
-            while (true) {
-              blockChainsArray = <Widget>[];
+          child: Column(
+            children: [
+              SizedBox(height: 10),
+              SizedBox(
+                height: 20,
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Icon(
+                      CupertinoIcons.bell,
+                      size: 30,
+                      color: Color(0x00222222),
+                    ),
+                    StreamBuilder(stream: () async* {
+                      while (true) {
+                        var allCryptoPrice =
+                            jsonDecode(await getCryptoPrice()) as Map;
 
-              var totalBalance = 0.0;
+                        var seedPhrase = (await SharedPreferences.getInstance())
+                            .getString('mmemomic');
+                        var currencyWithSymbol = jsonDecode(await rootBundle
+                            .loadString('json/currency_symbol.json'));
 
-              var allCryptoPrice = jsonDecode(await getCryptoPrice()) as Map;
+                        var defaultCurrency =
+                            (await SharedPreferences.getInstance())
+                                    .getString('defaultCurrency') ??
+                                "USD";
+                        var symbol =
+                            currencyWithSymbol[defaultCurrency]['symbol'];
 
-              var seedPhrase =
-                  (await SharedPreferences.getInstance()).getString('mmemomic');
-              var currencyWithSymbol = jsonDecode(
-                  await rootBundle.loadString('json/currency_symbol.json'));
+                        var balance = await totalCryptoBalance(
+                            seedPhrase: seedPhrase,
+                            defaultCurrency: defaultCurrency,
+                            allCryptoPrice: allCryptoPrice);
 
-              var defaultCurrency = (await SharedPreferences.getInstance())
-                      .getString('defaultCurrency') ??
-                  "USD";
-              var symbol = currencyWithSymbol[defaultCurrency]['symbol'];
-
-              var bitCoinPrice = allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
-                  [defaultCurrency.toLowerCase()];
-
-              var getBitCoinDetails = await getBitCoinFromMemnomic(seedPhrase);
-
-              var bitCoinBalance = (await getBitcoinAddressDetails(
-                  getBitCoinDetails['address']))['final_balance'];
-              blockChainsArray.addAll([
-                InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => Token(data: const {
-                                    'name': 'BitCoin',
-                                    'symbol': 'BTC',
-                                    'default': 'BTC',
-                                    'block explorer':
-                                        'https://www.blockchain.com/btc'
-                                  })));
-                    },
-                    child: getBlockChainWidget(
-                      name: 'Bitcoin',
-                      image: const AssetImage('assets/bitcoin.png'),
-                      priceWithCurrency: symbol + formatMoney(bitCoinPrice),
-                      cryptoChange:
-                          allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
-                              [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: bitCoinBalance,
-                      cryptoSymbol: 'BTC',
-                    )),
-                Divider(),
-              ]);
-
-              for (String i in getBlockChains().keys) {
-                var cryptoPrice = allCryptoPrice[
-                        coinGeckCryptoSymbolToID[getBlockChains()[i]['symbol']]]
-                    [defaultCurrency.toLowerCase()];
-
-                var cryptoBalance =
-                    await getEthBalance(rpcUrl: getBlockChains()[i]['rpc']);
-
-                totalBalance += cryptoBalance * cryptoPrice;
-
-                blockChainsArray.add(InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => Token(data: {
-                                    'name': i,
-                                    'symbol': getBlockChains()[i]['symbol'],
-                                    'default': getBlockChains()[i]['symbol'],
-                                    'block explorer': getBlockChains()[i]
-                                        ['block explorer'],
-                                    'rpc': getBlockChains()[i]['rpc'],
-                                    'chainId': getBlockChains()[i]['chainId'],
-                                  })));
-                    },
-                    child: getBlockChainWidget(
-                      name: i,
-                      image: AssetImage(getBlockChains()[i]['image'] ??
-                          'assets/ethereum_logo.png'),
-                      priceWithCurrency: symbol + formatMoney(cryptoPrice),
-                      cryptoChange: allCryptoPrice[coinGeckCryptoSymbolToID[
-                              getBlockChains()[i]['symbol']]]
-                          [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: cryptoBalance,
-                      cryptoSymbol: getBlockChains()[i]['symbol'],
-                    )));
-
-                blockChainsArray.add(Divider());
-              }
-
-              var litecoinPrice =
-                  allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
-                      [defaultCurrency.toLowerCase()];
-
-              var getLitecoinDetails =
-                  await getLiteCoinFromMemnomic(seedPhrase);
-              var liteCoinBalance = (await getLitecoinAddressDetails(
-                  getLitecoinDetails['address']))['final_balance'];
-
-              totalBalance += liteCoinBalance * litecoinPrice;
-              blockChainsArray.addAll([
-                InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => Token(data: const {
-                                    'name': 'Litecoin',
-                                    'symbol': 'LTC',
-                                    'default': 'LTC',
-                                    'block explorer':
-                                        'https://live.blockcypher.com/ltc'
-                                  })));
-                    },
-                    child: getBlockChainWidget(
-                      name: 'Litecoin',
-                      image: const AssetImage('assets/litecoin.png'),
-                      priceWithCurrency: symbol + formatMoney(litecoinPrice),
-                      cryptoChange:
-                          allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
-                              [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: liteCoinBalance,
-                      cryptoSymbol: 'LTC',
-                    )),
-                Divider(),
-              ]);
-
-              var dogeCoinPrice =
-                  allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
-                      [defaultCurrency.toLowerCase()];
-              var getDogeCoinDetails =
-                  await getDogeCoinFromMemnomic(seedPhrase);
-              var dogeCoinBalance = (await getDogecoinAddressDetails(
-                  getDogeCoinDetails['address']))['final_balance'];
-
-              totalBalance += dogeCoinBalance * dogeCoinPrice;
-
-              blockChainsArray.addAll([
-                InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (ctx) => Token(data: const {
-                                    'name': 'Dogecoin',
-                                    'symbol': 'DOGE',
-                                    'default': 'DOGE',
-                                    'block explorer': 'https://dogechain.info'
-                                  })));
-                    },
-                    child: getBlockChainWidget(
-                      name: 'Dogecoin',
-                      image: const AssetImage('assets/dogecoin.png'),
-                      priceWithCurrency: symbol + formatMoney(dogeCoinPrice),
-                      cryptoChange:
-                          allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
-                              [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: dogeCoinBalance,
-                      cryptoSymbol: 'DOGE',
-                    )),
-                Divider(),
-              ]);
-              yield totalBalance;
-              await Future.delayed(forFetch);
-            }
-          }(), builder: (context, snapshot) {
-            if (snapshot.hasError) print(snapshot.error);
-            return Padding(
-              padding: const EdgeInsets.all(25),
-              child: Column(
-                children: [
-                  SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Icon(
-                        CupertinoIcons.bell,
-                        size: 30,
-                        color: Color(0x00222222),
-                      ),
-                      Text(
-                        '\$${snapshot.hasData ? formatMoney(snapshot.data) : ''}',
+                        yield {'balance': balance, 'symbol': symbol};
+                        await Future.delayed(forFetch);
+                      }
+                    }(), builder: (ctx, snapshot) {
+                      return Text(
+                        snapshot.hasData
+                            ? '${snapshot.data['symbol']}${formatMoney(snapshot.data['balance'])}'
+                            : '',
                         style: TextStyle(fontSize: 25),
-                      ),
-                      IconButton(
-                        onPressed: () async {
-                          await Navigator.push(
-                              context,
-                              PageTransition(
-                                  type: PageTransitionType.rightToLeft,
-                                  child: ImportToken()));
-                        },
-                        icon: Icon(
-                          Icons.menu,
-                          size: 30,
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  Text(
-                    walletName,
-                    style: TextStyle(fontSize: 20),
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.all(15),
-                    child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          InkWell(
-                            onTap: () async {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (ctx) => airdrop()));
-                            },
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.umbrella,
-                                      size: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  'Airdrop',
-                                  style: TextStyle(fontSize: 15),
-                                )
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () async {
-                              var sweetAlert = await rootBundle
-                                  .loadString('dappBrowser/sweetalert.js');
-                              var web3 = await rootBundle
-                                  .loadString('dappBrowser/web3.min.js');
-                              var provider = await rootBundle
-                                  .loadString('dappBrowser/provider.js');
-
-                              var reEnableJavascript =
-                                  await rootBundle.loadString(
-                                      'dappBrowser/reEnableJavascript.js');
-
-                              await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (ctx) => dapp(
-                                            sweetAlert: sweetAlert,
-                                            web3: web3,
-                                            provider: provider,
-                                            reEnableJavascript:
-                                                reEnableJavascript,
-                                          )));
-                            },
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.web,
-                                      size: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  'Dapps',
-                                  style: TextStyle(fontSize: 15),
-                                )
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (ctx) => NFT()));
-                            },
-                            child: Column(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                      color: Colors.blue,
-                                      shape: BoxShape.circle),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Icon(
-                                      Icons.swap_horiz,
-                                      size: 20,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                Text(
-                                  'NFT',
-                                  style: TextStyle(fontSize: 15),
-                                )
-                              ],
-                            ),
-                          ),
-                        ]),
-                  ),
-                  SizedBox(height: 40),
-                ]
-                  ..addAll(blockChainsArray)
-                  ..add(FutureBuilder(future: () async {
-                    var sharedPrefToken =
-                        (await SharedPreferences.getInstance())
-                            .getString('customTokenList');
-
-                    var customTokenList;
-
-                    if (sharedPrefToken == null) {
-                      customTokenList = [];
-                    } else {
-                      customTokenList = jsonDecode(sharedPrefToken as String);
-                    }
-
-                    final walletContract = web3.DeployedContract(
-                        web3.ContractAbi.fromJson(erc20Abi, 'MetaCoin'),
-                        web3.EthereumAddress.fromHex(tokenContractAddress));
-                    var pref = (await SharedPreferences.getInstance());
-                    var seedPhrase = pref.getString('mmemomic');
-                    var response = await getCryptoKeys(seedPhrase);
-                    var appTokenDetails = {};
-                    var appTokenKey = 'appTokenDetails';
-
-                    if (pref.getString(appTokenKey) == null) {
-                      final client = web3.Web3Client(
-                        getBlockChains()[walletContractNetwork]['rpc'],
-                        Client(),
                       );
+                    }),
+                    IconButton(
+                      onPressed: () async {
+                        await Navigator.push(
+                            context,
+                            PageTransition(
+                                type: PageTransitionType.rightToLeft,
+                                child: ImportToken()));
+                      },
+                      icon: Icon(
+                        Icons.menu,
+                        size: 30,
+                      ),
+                    )
+                  ],
+                ),
+              ),
+              StreamBuilder(stream: () async* {
+                while (true) {
+                  blockChainsArray = <Widget>[];
 
-                      final nameFunction = walletContract.function('name');
-                      final symbolFunction = walletContract.function('symbol');
-                      final decimalsFunction =
-                          walletContract.function('decimals');
+                  var allCryptoPrice =
+                      jsonDecode(await getCryptoPrice()) as Map;
 
-                      final name = (await client.call(
-                              contract: walletContract,
-                              function: nameFunction,
-                              params: []))
-                          .first;
+                  var seedPhrase = (await SharedPreferences.getInstance())
+                      .getString('mmemomic');
+                  var currencyWithSymbol = jsonDecode(
+                      await rootBundle.loadString('json/currency_symbol.json'));
 
-                      final decimals = (await client.call(
-                              contract: walletContract,
-                              function: decimalsFunction,
-                              params: []))
-                          .first;
+                  var defaultCurrency = (await SharedPreferences.getInstance())
+                          .getString('defaultCurrency') ??
+                      "USD";
+                  var symbol = currencyWithSymbol[defaultCurrency]['symbol'];
 
-                      final symbol = (await client.call(
-                              contract: walletContract,
-                              function: symbolFunction,
-                              params: []))
-                          .first;
+                  var bitCoinPrice =
+                      allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
+                          [defaultCurrency.toLowerCase()];
 
-                      appTokenDetails = {
-                        'name': name,
-                        'symbol': symbol,
-                        'balance': '***',
-                        'contractAddress': tokenContractAddress,
-                        'network': walletContractNetwork,
-                        'rpc': getBlockChains()[walletContractNetwork]['rpc'],
-                        'chainId': getBlockChains()[walletContractNetwork]
-                            ['chainId'],
-                        'block explorer':
-                            getBlockChains()[walletContractNetwork]
-                                ['block explorer'],
-                        'image': 'assets/logo.png'
-                      };
-                      await pref.setString(
-                          appTokenKey, jsonEncode(appTokenDetails));
-                    } else {
-                      appTokenDetails = jsonDecode(pref.getString(appTokenKey));
-                    }
+                  blockChainsArray.addAll([
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => Token(data: const {
+                                        'name': 'BitCoin',
+                                        'symbol': 'BTC',
+                                        'default': 'BTC',
+                                        'block explorer':
+                                            'https://www.blockchain.com/btc'
+                                      })));
+                        },
+                        child: getBlockChainWidget(
+                          name: 'Bitcoin',
+                          image: const AssetImage('assets/bitcoin.png'),
+                          priceWithCurrency: symbol + formatMoney(bitCoinPrice),
+                          cryptoChange: allCryptoPrice[
+                                  coinGeckCryptoSymbolToID['BTC']]
+                              [defaultCurrency.toLowerCase() + '_24h_change'],
+                          cryptoAmount: StreamBuilder(
+                            stream: () async* {
+                              while (true) {
+                                var getBitCoinDetails =
+                                    await getBitCoinFromMemnomic(seedPhrase);
+                                yield (await getBitcoinAddressDetails(
+                                        getBitCoinDetails['address']))[
+                                    'final_balance'];
+                                await Future.delayed(forFetch);
+                              }
+                            }(),
+                            builder: (ctx, snapshot) {
+                              return Text(
+                                '${snapshot.hasData ? formatMoney(snapshot.data, isBalance: true) : ''} BTC',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    overflow: TextOverflow.ellipsis),
+                              );
+                            },
+                          ),
+                        )),
+                    Divider(),
+                  ]);
 
-                    var elementList = [appTokenDetails];
+                  for (String i in getBlockChains().keys) {
+                    var cryptoPrice = allCryptoPrice[coinGeckCryptoSymbolToID[
+                            getBlockChains()[i]['symbol']]]
+                        [defaultCurrency.toLowerCase()];
 
-                    for (var element in (customTokenList as List)) {
-                      elementList.add({
-                        'name': element['name'],
-                        'symbol': element['symbol'],
-                        'balance': '***',
-                        'contractAddress': element['contractAddress'],
-                        'network': element['network'],
-                        'chainId': element['chainId'],
-                        'block explorer': element['block explorer'],
-                        'rpc': element['rpc'],
-                      });
-                    }
+                    blockChainsArray.add(InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => Token(data: {
+                                        'name': i,
+                                        'symbol': getBlockChains()[i]['symbol'],
+                                        'default': getBlockChains()[i]
+                                            ['symbol'],
+                                        'block explorer': getBlockChains()[i]
+                                            ['block explorer'],
+                                        'rpc': getBlockChains()[i]['rpc'],
+                                        'chainId': getBlockChains()[i]
+                                            ['chainId'],
+                                      })));
+                        },
+                        child: getBlockChainWidget(
+                          name: i,
+                          image: AssetImage(getBlockChains()[i]['image'] ??
+                              'assets/ethereum_logo.png'),
+                          priceWithCurrency: symbol + formatMoney(cryptoPrice),
+                          cryptoChange: allCryptoPrice[coinGeckCryptoSymbolToID[
+                                  getBlockChains()[i]['symbol']]]
+                              [defaultCurrency.toLowerCase() + '_24h_change'],
+                          cryptoAmount: StreamBuilder(
+                            stream: () async* {
+                              var cryptoBalance = await getEthBalance(
+                                  rpcUrl: getBlockChains()[i]['rpc']);
+                              yield cryptoBalance;
+                            }(),
+                            builder: (ctx, snapshot) {
+                              return Text(
+                                '${snapshot.hasData ? formatMoney(snapshot.data, isBalance: true) : ''} ${getBlockChains()[i]['symbol']}',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    overflow: TextOverflow.ellipsis),
+                              );
+                            },
+                          ),
+                        )));
 
-                    return elementList;
-                  }(), builder: (ctx, snapshot) {
-                    if (snapshot.hasError) {
-                      print(snapshot.error);
-                      return Container();
-                    }
+                    blockChainsArray.add(Divider());
+                  }
 
-                    if (snapshot.hasData) {
-                      var customTokensWidget = <Widget>[];
+                  var litecoinPrice =
+                      allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
+                          [defaultCurrency.toLowerCase()];
 
-                      (snapshot.data as List).forEach((element) {
-                        customTokensWidget.add(InkWell(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (ctx) => Token(data: {
-                                          'name': element['name'],
-                                          'symbol': element['symbol'],
-                                          'noPrice': true,
-                                          'contractAddress':
-                                              element['contractAddress'],
-                                          'network': element['network'],
-                                          'chainId': element['chainId'],
-                                          'rpc': element['rpc'],
-                                          'block explorer':
-                                              element['block explorer'],
-                                        })));
-                          },
-                          child: Column(
+                  blockChainsArray.addAll([
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => Token(data: const {
+                                        'name': 'Litecoin',
+                                        'symbol': 'LTC',
+                                        'default': 'LTC',
+                                        'block explorer':
+                                            'https://live.blockcypher.com/ltc'
+                                      })));
+                        },
+                        child: getBlockChainWidget(
+                          name: 'Litecoin',
+                          image: const AssetImage('assets/litecoin.png'),
+                          priceWithCurrency:
+                              symbol + formatMoney(litecoinPrice),
+                          cryptoChange: allCryptoPrice[
+                                  coinGeckCryptoSymbolToID['LTC']]
+                              [defaultCurrency.toLowerCase() + '_24h_change'],
+                          cryptoAmount: StreamBuilder(
+                            stream: () async* {
+                              var getLitecoinDetails =
+                                  await getLiteCoinFromMemnomic(seedPhrase);
+                              yield (await getLitecoinAddressDetails(
+                                      getLitecoinDetails['address']))[
+                                  'final_balance'];
+                            }(),
+                            builder: (ctx, snapshot) {
+                              return Text(
+                                '${snapshot.hasData ? formatMoney(snapshot.data, isBalance: true) : ''} LTC',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    overflow: TextOverflow.ellipsis),
+                              );
+                            },
+                          ),
+                        )),
+                    Divider(),
+                  ]);
+
+                  var dogeCoinPrice =
+                      allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
+                          [defaultCurrency.toLowerCase()];
+
+                  blockChainsArray.addAll([
+                    InkWell(
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (ctx) => Token(data: const {
+                                        'name': 'Dogecoin',
+                                        'symbol': 'DOGE',
+                                        'default': 'DOGE',
+                                        'block explorer':
+                                            'https://dogechain.info'
+                                      })));
+                        },
+                        child: getBlockChainWidget(
+                          name: 'Dogecoin',
+                          image: const AssetImage('assets/dogecoin.png'),
+                          priceWithCurrency:
+                              symbol + formatMoney(dogeCoinPrice),
+                          cryptoChange: allCryptoPrice[
+                                  coinGeckCryptoSymbolToID['DOGE']]
+                              [defaultCurrency.toLowerCase() + '_24h_change'],
+                          cryptoAmount: StreamBuilder(
+                            stream: () async* {
+                              var getDogeCoinDetails =
+                                  await getDogeCoinFromMemnomic(seedPhrase);
+                              yield (await getDogecoinAddressDetails(
+                                      getDogeCoinDetails['address']))[
+                                  'final_balance'];
+                            }(),
+                            builder: (ctx, snapshot) {
+                              return Text(
+                                '${snapshot.hasData ? formatMoney(snapshot.data, isBalance: true) : ''} DOGE',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 16,
+                                    overflow: TextOverflow.ellipsis),
+                              );
+                            },
+                          ),
+                        )),
+                    Divider(),
+                  ]);
+                  yield {
+                    'symbol': symbol,
+                    'seedPhrase': seedPhrase,
+                    'allCryptoPrice': allCryptoPrice,
+                    'blockChainsArray': blockChainsArray,
+                    'defaultCurrency': defaultCurrency
+                  };
+                  await Future.delayed(forFetch);
+                }
+              }(), builder: (context, snapshot) {
+                if (snapshot.hasError) print(snapshot.error);
+                return Padding(
+                  padding: const EdgeInsets.all(25),
+                  child: Column(
+                    children: [
+                      Text(
+                        walletName,
+                        style: TextStyle(fontSize: 20),
+                      ),
+                      SizedBox(height: 20),
+                      Padding(
+                        padding: const EdgeInsets.all(15),
+                        child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [
-                              Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                              InkWell(
+                                onTap: () async {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (ctx) => airdrop()));
+                                },
+                                child: Column(
                                   children: [
-                                    Flexible(
-                                      child: Row(
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 20,
-                                            backgroundColor: Colors.white,
-                                            child: element['image'] != null
-                                                ? null
-                                                : Text(element['symbol']),
-                                            backgroundImage: element['image'] !=
-                                                    null
-                                                ? AssetImage(element['image'])
-                                                : null,
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          shape: BoxShape.circle),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(
+                                          Icons.umbrella,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Airdrop',
+                                      style: TextStyle(fontSize: 15),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () async {
+                                  var sweetAlert = await rootBundle
+                                      .loadString('dappBrowser/sweetalert.js');
+                                  var web3 = await rootBundle
+                                      .loadString('dappBrowser/web3.min.js');
+                                  var provider = await rootBundle
+                                      .loadString('dappBrowser/provider.js');
+
+                                  var reEnableJavascript =
+                                      await rootBundle.loadString(
+                                          'dappBrowser/reEnableJavascript.js');
+
+                                  await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (ctx) => dapp(
+                                                sweetAlert: sweetAlert,
+                                                web3: web3,
+                                                provider: provider,
+                                                reEnableJavascript:
+                                                    reEnableJavascript,
+                                              )));
+                                },
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          shape: BoxShape.circle),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(
+                                          Icons.web,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'Dapps',
+                                      style: TextStyle(fontSize: 15),
+                                    )
+                                  ],
+                                ),
+                              ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (ctx) => NFT()));
+                                },
+                                child: Column(
+                                  children: [
+                                    Container(
+                                      decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          shape: BoxShape.circle),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Icon(
+                                          Icons.swap_horiz,
+                                          size: 20,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      height: 10,
+                                    ),
+                                    Text(
+                                      'NFT',
+                                      style: TextStyle(fontSize: 15),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ]),
+                      ),
+                      SizedBox(height: 40),
+                    ]
+                      ..addAll(blockChainsArray)
+                      ..add(FutureBuilder(future: () async {
+                        var sharedPrefToken =
+                            (await SharedPreferences.getInstance())
+                                .getString('customTokenList');
+
+                        var customTokenList;
+
+                        if (sharedPrefToken == null) {
+                          customTokenList = [];
+                        } else {
+                          customTokenList =
+                              jsonDecode(sharedPrefToken as String);
+                        }
+
+                        final walletContract = web3.DeployedContract(
+                            web3.ContractAbi.fromJson(erc20Abi, 'MetaCoin'),
+                            web3.EthereumAddress.fromHex(tokenContractAddress));
+                        var pref = (await SharedPreferences.getInstance());
+                        var seedPhrase = pref.getString('mmemomic');
+                        var response = await getCryptoKeys(seedPhrase);
+                        var appTokenDetails = {};
+                        var appTokenKey = 'appTokenDetails';
+
+                        if (pref.getString(appTokenKey) == null) {
+                          final client = web3.Web3Client(
+                            getBlockChains()[walletContractNetwork]['rpc'],
+                            Client(),
+                          );
+
+                          final nameFunction = walletContract.function('name');
+                          final symbolFunction =
+                              walletContract.function('symbol');
+                          final decimalsFunction =
+                              walletContract.function('decimals');
+
+                          final name = (await client.call(
+                                  contract: walletContract,
+                                  function: nameFunction,
+                                  params: []))
+                              .first;
+
+                          final decimals = (await client.call(
+                                  contract: walletContract,
+                                  function: decimalsFunction,
+                                  params: []))
+                              .first;
+
+                          final symbol = (await client.call(
+                                  contract: walletContract,
+                                  function: symbolFunction,
+                                  params: []))
+                              .first;
+
+                          appTokenDetails = {
+                            'name': name,
+                            'symbol': symbol,
+                            'balance': '***',
+                            'contractAddress': tokenContractAddress,
+                            'network': walletContractNetwork,
+                            'rpc': getBlockChains()[walletContractNetwork]
+                                ['rpc'],
+                            'chainId': getBlockChains()[walletContractNetwork]
+                                ['chainId'],
+                            'block explorer':
+                                getBlockChains()[walletContractNetwork]
+                                    ['block explorer'],
+                            'image': 'assets/logo.png'
+                          };
+                          await pref.setString(
+                              appTokenKey, jsonEncode(appTokenDetails));
+                        } else {
+                          appTokenDetails =
+                              jsonDecode(pref.getString(appTokenKey));
+                        }
+
+                        var elementList = [appTokenDetails];
+
+                        for (var element in (customTokenList as List)) {
+                          elementList.add({
+                            'name': element['name'],
+                            'symbol': element['symbol'],
+                            'balance': '***',
+                            'contractAddress': element['contractAddress'],
+                            'network': element['network'],
+                            'chainId': element['chainId'],
+                            'block explorer': element['block explorer'],
+                            'rpc': element['rpc'],
+                          });
+                        }
+
+                        return elementList;
+                      }(), builder: (ctx, snapshot) {
+                        if (snapshot.hasError) {
+                          print(snapshot.error);
+                          return Container();
+                        }
+
+                        if (snapshot.hasData) {
+                          var customTokensWidget = <Widget>[];
+
+                          (snapshot.data as List).forEach((element) {
+                            customTokensWidget.add(InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (ctx) => Token(data: {
+                                              'name': element['name'],
+                                              'symbol': element['symbol'],
+                                              'noPrice': true,
+                                              'contractAddress':
+                                                  element['contractAddress'],
+                                              'network': element['network'],
+                                              'chainId': element['chainId'],
+                                              'rpc': element['rpc'],
+                                              'block explorer':
+                                                  element['block explorer'],
+                                            })));
+                              },
+                              child: Column(
+                                children: [
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        Flexible(
+                                          child: Row(
+                                            children: [
+                                              CircleAvatar(
+                                                radius: 20,
+                                                backgroundColor: Colors.white,
+                                                child: element['image'] != null
+                                                    ? null
+                                                    : Text(element['symbol']),
+                                                backgroundImage:
+                                                    element['image'] != null
+                                                        ? AssetImage(
+                                                            element['image'])
+                                                        : null,
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              Flexible(
+                                                child: Text(
+                                                  element['name'],
+                                                  style: TextStyle(
+                                                      fontSize: 16,
+                                                      fontWeight:
+                                                          FontWeight.w500),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Flexible(
-                                            child: Text(
-                                              element['name'],
+                                        ),
+                                        Flexible(
+                                          child:
+                                              StreamBuilder(stream: () async* {
+                                            while (true) {
+                                              yield (await getERC20TokenBalance(
+                                                  element));
+                                              await Future.delayed(
+                                                  Duration(minutes: 1));
+                                            }
+                                          }(), builder: (context, snapshot) {
+                                            return Text(
+                                              '${snapshot.hasData ? formatMoney(snapshot.data) : element['balance']} ${element['symbol']}',
                                               style: TextStyle(
                                                   fontSize: 16,
                                                   fontWeight: FontWeight.w500),
                                               overflow: TextOverflow.ellipsis,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
+                                            );
+                                          }),
+                                        ),
+                                      ]),
+                                  Row(children: [
+                                    SizedBox(
+                                      height: 15,
                                     ),
-                                    Flexible(
-                                      child: StreamBuilder(stream: () async* {
-                                        while (true) {
-                                          yield (await getERC20TokenBalance(
-                                              element));
-                                          await Future.delayed(
-                                              Duration(minutes: 1));
-                                        }
-                                      }(), builder: (context, snapshot) {
-                                        return Text(
-                                          '${snapshot.hasData ? formatMoney(snapshot.data) : element['balance']} ${element['symbol']}',
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.w500),
-                                          overflow: TextOverflow.ellipsis,
-                                        );
-                                      }),
+                                    SizedBox(
+                                      height: 15,
                                     ),
                                   ]),
-                              Row(children: [
-                                SizedBox(
-                                  height: 15,
-                                ),
-                                SizedBox(
-                                  height: 15,
-                                ),
-                              ]),
-                              Row(children: [
-                                Text(
-                                  '',
-                                  style: TextStyle(fontSize: 15),
-                                ),
-                                Text(''),
-                              ]),
-                              Divider()
-                            ],
-                          ),
-                        ));
-                      });
-                      return Column(
-                        children: customTokensWidget,
-                      );
-                    } else
-                      return Container();
-                  })),
-              ),
-            );
-          }),
+                                  Row(children: [
+                                    Text(
+                                      '',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                    Text(''),
+                                  ]),
+                                  Divider()
+                                ],
+                              ),
+                            ));
+                          });
+                          return Column(
+                            children: customTokensWidget,
+                          );
+                        } else
+                          return Container();
+                      })),
+                  ),
+                );
+              }),
+            ],
+          ),
         ),
       ),
     );

@@ -201,7 +201,7 @@ class _TokenState extends State<Token> {
                   }(), builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Text(
-                        '${formatMoney(snapshot.data)} ${widget.data['symbol']}',
+                        '${formatMoney(snapshot.data, isBalance: true)} ${widget.data['symbol']}',
                         style: TextStyle(fontSize: 20),
                       );
                     } else

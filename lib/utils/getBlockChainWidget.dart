@@ -7,22 +7,19 @@ class getBlockChainWidget extends StatefulWidget {
   var priceWithCurrency;
   var cryptoChange;
   var cryptoAmount;
-  var cryptoSymbol;
   getBlockChainWidget(
       {Key key,
       AssetImage image,
       String name,
       String priceWithCurrency,
       double cryptoChange,
-      String cryptoSymbol,
-      double cryptoAmount})
+      Widget cryptoAmount})
       : super(key: key) {
     this.image = image;
     this.name = name;
     this.priceWithCurrency = priceWithCurrency;
     this.cryptoChange = cryptoChange;
     this.cryptoAmount = cryptoAmount;
-    this.cryptoSymbol = cryptoSymbol;
   }
 
   @override
@@ -83,13 +80,7 @@ class _getBlockChainWidgetState extends State<getBlockChainWidget> {
                                   )
                                 ],
                               ),
-                              Text(
-                                '${formatMoney(widget.cryptoAmount, isBalance: true)} ${widget.cryptoSymbol}',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 16,
-                                    overflow: TextOverflow.ellipsis),
-                              )
+                              widget.cryptoAmount
                             ],
                           )),
                         ],

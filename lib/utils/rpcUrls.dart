@@ -299,8 +299,6 @@ Map calculateBitCoinKey(String seedPhrase, {bool istestnet}) {
     ).data.address;
   }
 
-  print(HEX.encode(node.privateKey));
-
   return {'address': address, 'private_key': HEX.encode(node.privateKey)};
 }
 
@@ -468,8 +466,6 @@ Future sendBitCoin(String senderAddressString, recipientAddress,
     });
   }
 
-  print(data);
-
   return (await post(Uri.parse('${appBaseUrl}sendBitcoin'),
           headers: {'Content-Type': 'application/json'}, body: data))
       .body;
@@ -548,7 +544,6 @@ Future<String> getCryptoPrice() async {
     var responseBody = (await get(Uri.parse(
             'https://api.coingecko.com/api/v3/simple/price?ids=${allCrypto}&vs_currencies=${defaultCurrency}&include_24hr_change=true')))
         .body;
-
 
     await storedKey.setString('cryptoPrices', responseBody);
     return responseBody;
@@ -693,6 +688,50 @@ Future<num> getCurrencyPriceFromUSD(String currencySymbol) async {
   }
 }
 
+Future<double> totalCryptoBalance(
+    {String seedPhrase, Map allCryptoPrice, String defaultCurrency}) async {
+  var totalBalance = 0.0;
+
+  var getBitCoinDetails = await getBitCoinFromMemnomic(seedPhrase);
+
+  var bitCoinBalance = (await getBitcoinAddressDetails(
+      getBitCoinDetails['address']))['final_balance'];
+  var bitcoinPrice = allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
+      [defaultCurrency.toLowerCase()];
+
+  totalBalance += bitCoinBalance * bitcoinPrice;
+
+  for (String i in getBlockChains().keys) {
+    var cryptoEVMCompPrice =
+        allCryptoPrice[coinGeckCryptoSymbolToID[getBlockChains()[i]['symbol']]]
+            [defaultCurrency.toLowerCase()];
+    var cryptoEVMCompBalance =
+        await getEthBalance(rpcUrl: getBlockChains()[i]['rpc']);
+
+    totalBalance += cryptoEVMCompBalance * cryptoEVMCompPrice;
+  }
+
+  var getLitecoinDetails = await getLiteCoinFromMemnomic(seedPhrase);
+  var litecoinBalance = (await getLitecoinAddressDetails(
+      getLitecoinDetails['address']))['final_balance'];
+
+  var litecoinPrice = allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
+      [defaultCurrency.toLowerCase()];
+
+  totalBalance += litecoinBalance * litecoinPrice;
+
+  var getDogeCoinDetails = await getDogeCoinFromMemnomic(seedPhrase);
+  var dogeCoinBalance = (await getDogecoinAddressDetails(
+      getDogeCoinDetails['address']))['final_balance'];
+
+  var dogecoinPrice = allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
+      [defaultCurrency.toLowerCase()];
+
+  totalBalance += dogeCoinBalance * dogecoinPrice;
+
+  return totalBalance;
+}
+
 upload(File imageFile, String fileName, MediaType imageMediaType, uploadURL,
     Map fieldsMap) async {
   try {
@@ -750,7 +789,7 @@ Future<double> getEthBalance({rpcUrl}) async {
 
 final privateSaleDataKey = "privateSaleKey";
 
-final Duration forFetch = Duration(seconds: 30);
+final Duration forFetch = Duration(seconds: 10);
 
 const convertionRate = 0.03;
 
