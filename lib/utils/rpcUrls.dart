@@ -554,7 +554,7 @@ Future<String> getCryptoPrice() async {
     await storedKey.setString('cryptoPrices', responseBody);
     return responseBody;
   } catch (e) {
-    if (storedKey.getDouble('cryptoPrices') != null) {
+    if (storedKey.getString('cryptoPrices') != null) {
       return storedKey.getString('cryptoPrices');
     }
     return null;

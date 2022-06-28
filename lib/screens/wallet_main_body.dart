@@ -43,11 +43,14 @@ class _WalletMainBodyState extends State<WalletMainBody>
           child: StreamBuilder(stream: () async* {
             while (true) {
               blockChainsArray = <Widget>[];
+
               var allCryptoPrice = jsonDecode(await getCryptoPrice()) as Map;
+
               var seedPhrase =
                   (await SharedPreferences.getInstance()).getString('mmemomic');
               var currencyWithSymbol = jsonDecode(
                   await rootBundle.loadString('json/currency_symbol.json'));
+
               var defaultCurrency = (await SharedPreferences.getInstance())
                       .getString('defaultCurrency') ??
                   "USD";
