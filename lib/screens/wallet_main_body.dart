@@ -394,26 +394,11 @@ class _WalletMainBodyState extends State<WalletMainBody>
                           ),
                           InkWell(
                             onTap: () async {
-                              var sweetAlert = await rootBundle
-                                  .loadString('dappBrowser/sweetalert.js');
-                              var web3 = await rootBundle
-                                  .loadString('dappBrowser/web3.min.js');
-                              var provider = await rootBundle
-                                  .loadString('dappBrowser/provider.js');
-
-                              var reEnableJavascript =
-                                  await rootBundle.loadString(
-                                      'dappBrowser/reEnableJavascript.js');
 
                               await Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (ctx) => dapp(
-                                            sweetAlert: sweetAlert,
-                                            web3: web3,
-                                            provider: provider,
-                                            reEnableJavascript:
-                                                reEnableJavascript,
                                           )));
                             },
                             child: Container(

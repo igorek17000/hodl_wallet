@@ -16,19 +16,10 @@ import 'package:validators/validators.dart';
 import '../utils/rpcUrls.dart';
 
 class dapp extends StatefulWidget {
-  var sweetAlert;
-  var web3;
-  var provider;
-  var hdwallet;
   var data;
-  var reEnableJavascript;
-  dapp(
-      {this.sweetAlert,
-      this.web3,
-      this.provider,
-      this.hdwallet,
-      this.data,
-      this.reEnableJavascript});
+  dapp({
+    this.data,
+  });
   @override
   State<dapp> createState() => _dappState();
 }
@@ -328,6 +319,11 @@ class _dappState extends State<dapp> {
                       callback: (args) {
                         print(args);
                       });
+                },
+                onLoadStart: (InAppWebViewController controller, Uri url) {
+                  setState(() {
+                    dappBrowser.text = url.toString();
+                  });
                 },
                 onLoadStop: (InAppWebViewController controller, Uri url) {
                   _controller.evaluateJavascript(source: '''
