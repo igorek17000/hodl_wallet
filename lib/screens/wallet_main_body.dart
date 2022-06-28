@@ -44,6 +44,8 @@ class _WalletMainBodyState extends State<WalletMainBody>
             while (true) {
               blockChainsArray = <Widget>[];
 
+              var totalBalance = 0.0;
+
               var allCryptoPrice = jsonDecode(await getCryptoPrice()) as Map;
 
               var seedPhrase =
@@ -56,6 +58,13 @@ class _WalletMainBodyState extends State<WalletMainBody>
                   "USD";
               var symbol = currencyWithSymbol[defaultCurrency]['symbol'];
 
+              var bitCoinPrice = allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
+                  [defaultCurrency.toLowerCase()];
+
+              var getBitCoinDetails = await getBitCoinFromMemnomic(seedPhrase);
+
+              var bitCoinBalance = (await getBitcoinAddressDetails(
+                  getBitCoinDetails['address']))['final_balance'];
               blockChainsArray.addAll([
                 InkWell(
                     onTap: () {
@@ -73,35 +82,26 @@ class _WalletMainBodyState extends State<WalletMainBody>
                     child: getBlockChainWidget(
                       name: 'Bitcoin',
                       image: const AssetImage('assets/bitcoin.png'),
-                      priceWithCurrency: symbol +
-                          formatMoney(
-                              allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
-                                  [defaultCurrency.toLowerCase()]),
+                      priceWithCurrency: symbol + formatMoney(bitCoinPrice),
                       cryptoChange:
                           allCryptoPrice[coinGeckCryptoSymbolToID['BTC']]
                               [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: StreamBuilder(stream: () async* {
-                        while (true) {
-                          var getBitCoinDetails =
-                              await getBitCoinFromMemnomic(seedPhrase);
-                          yield (await getBitcoinAddressDetails(
-                              getBitCoinDetails['address']))['final_balance'];
-                          await Future.delayed(forFetch);
-                        }
-                      }(), builder: (context, snapshot) {
-                        return Text(
-                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
-                              ' BTC',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      }),
+                      cryptoAmount: bitCoinBalance,
+                      cryptoSymbol: 'BTC',
                     )),
                 Divider(),
               ]);
 
               for (String i in getBlockChains().keys) {
+                var cryptoPrice = allCryptoPrice[
+                        coinGeckCryptoSymbolToID[getBlockChains()[i]['symbol']]]
+                    [defaultCurrency.toLowerCase()];
+
+                var cryptoBalance =
+                    await getEthBalance(rpcUrl: getBlockChains()[i]['rpc']);
+
+                totalBalance += cryptoBalance * cryptoPrice;
+
                 blockChainsArray.add(InkWell(
                     onTap: () {
                       Navigator.push(
@@ -121,33 +121,27 @@ class _WalletMainBodyState extends State<WalletMainBody>
                       name: i,
                       image: AssetImage(getBlockChains()[i]['image'] ??
                           'assets/ethereum_logo.png'),
-                      priceWithCurrency: symbol +
-                          formatMoney(allCryptoPrice[coinGeckCryptoSymbolToID[
-                                  getBlockChains()[i]['symbol']]]
-                              [defaultCurrency.toLowerCase()]),
+                      priceWithCurrency: symbol + formatMoney(cryptoPrice),
                       cryptoChange: allCryptoPrice[coinGeckCryptoSymbolToID[
                               getBlockChains()[i]['symbol']]]
                           [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: StreamBuilder(stream: () async* {
-                        while (true) {
-                          yield await getEthBalance(
-                              rpcUrl: getBlockChains()[i]['rpc']);
-                          await Future.delayed(forFetch);
-                        }
-                      }(), builder: (ctx, snapshot) {
-                        return Text(
-                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
-                              ' ${getBlockChains()[i]['symbol']}',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      }),
+                      cryptoAmount: cryptoBalance,
+                      cryptoSymbol: getBlockChains()[i]['symbol'],
                     )));
 
                 blockChainsArray.add(Divider());
               }
 
+              var litecoinPrice =
+                  allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
+                      [defaultCurrency.toLowerCase()];
+
+              var getLitecoinDetails =
+                  await getLiteCoinFromMemnomic(seedPhrase);
+              var liteCoinBalance = (await getLitecoinAddressDetails(
+                  getLitecoinDetails['address']))['final_balance'];
+
+              totalBalance += liteCoinBalance * litecoinPrice;
               blockChainsArray.addAll([
                 InkWell(
                     onTap: () {
@@ -165,33 +159,25 @@ class _WalletMainBodyState extends State<WalletMainBody>
                     child: getBlockChainWidget(
                       name: 'Litecoin',
                       image: const AssetImage('assets/litecoin.png'),
-                      priceWithCurrency: symbol +
-                          formatMoney(
-                              allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
-                                  [defaultCurrency.toLowerCase()]),
+                      priceWithCurrency: symbol + formatMoney(litecoinPrice),
                       cryptoChange:
                           allCryptoPrice[coinGeckCryptoSymbolToID['LTC']]
                               [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: StreamBuilder(stream: () async* {
-                        while (true) {
-                          var getLitecoinDetails =
-                              await getLiteCoinFromMemnomic(seedPhrase);
-                          yield (await getLitecoinAddressDetails(
-                              getLitecoinDetails['address']))['final_balance'];
-                          await Future.delayed(forFetch);
-                        }
-                      }(), builder: (context, snapshot) {
-                        return Text(
-                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
-                              ' LTC',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      }),
+                      cryptoAmount: liteCoinBalance,
+                      cryptoSymbol: 'LTC',
                     )),
                 Divider(),
               ]);
+
+              var dogeCoinPrice =
+                  allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
+                      [defaultCurrency.toLowerCase()];
+              var getDogeCoinDetails =
+                  await getDogeCoinFromMemnomic(seedPhrase);
+              var dogeCoinBalance = (await getDogecoinAddressDetails(
+                  getDogeCoinDetails['address']))['final_balance'];
+
+              totalBalance += dogeCoinBalance * dogeCoinPrice;
 
               blockChainsArray.addAll([
                 InkWell(
@@ -209,34 +195,16 @@ class _WalletMainBodyState extends State<WalletMainBody>
                     child: getBlockChainWidget(
                       name: 'Dogecoin',
                       image: const AssetImage('assets/dogecoin.png'),
-                      priceWithCurrency: symbol +
-                          formatMoney(
-                              allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
-                                  [defaultCurrency.toLowerCase()]),
+                      priceWithCurrency: symbol + formatMoney(dogeCoinPrice),
                       cryptoChange:
                           allCryptoPrice[coinGeckCryptoSymbolToID['DOGE']]
                               [defaultCurrency.toLowerCase() + '_24h_change'],
-                      cryptoAmount: StreamBuilder(stream: () async* {
-                        while (true) {
-                          var getDogeCoinDetails =
-                              await getDogeCoinFromMemnomic(seedPhrase);
-                          yield (await getDogecoinAddressDetails(
-                              getDogeCoinDetails['address']))['final_balance'];
-                          await Future.delayed(forFetch);
-                        }
-                      }(), builder: (context, snapshot) {
-                        return Text(
-                          (snapshot.hasData ? formatMoney(snapshot.data) : '') +
-                              ' DOGE',
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w500),
-                          overflow: TextOverflow.ellipsis,
-                        );
-                      }),
+                      cryptoAmount: dogeCoinBalance,
+                      cryptoSymbol: 'DOGE',
                     )),
                 Divider(),
               ]);
-              yield {};
+              yield totalBalance;
               await Future.delayed(forFetch);
             }
           }(), builder: (context, snapshot) {
@@ -255,7 +223,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                         color: Color(0x00222222),
                       ),
                       Text(
-                        '\$0.00',
+                        '\$${snapshot.hasData ? formatMoney(snapshot.data) : ''}',
                         style: TextStyle(fontSize: 25),
                       ),
                       IconButton(
