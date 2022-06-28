@@ -199,16 +199,10 @@ class _TokenState extends State<Token> {
                       yield 0;
                     }
                   }(), builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      return Text(
-                        '${formatMoney(snapshot.data, isBalance: true)} ${widget.data['symbol']}',
-                        style: TextStyle(fontSize: 20),
-                      );
-                    } else
-                      return Text(
-                        '*** ${widget.data['symbol']}',
-                        style: TextStyle(fontSize: 20),
-                      );
+                    return Text(
+                      '${snapshot.hasData ? formatMoney(snapshot.data, isBalance: true) : ''} ${widget.data['symbol']}',
+                      style: TextStyle(fontSize: 20),
+                    );
                   }),
                   SizedBox(
                     height: 40,

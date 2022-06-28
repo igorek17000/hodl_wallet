@@ -305,8 +305,8 @@ class _dappState extends State<dapp> {
               height: double.infinity,
               width: double.infinity,
               child: InAppWebView(
-                initialUrlRequest:
-                    URLRequest(url: Uri.parse(dappBrowserInitialUrl)),
+                initialUrlRequest: URLRequest(
+                    url: Uri.parse(widget.data ?? dappBrowserInitialUrl)),
                 initialOptions: InAppWebViewGroupOptions(
                   crossPlatform: InAppWebViewOptions(
                     useShouldOverrideUrlLoading: true,
