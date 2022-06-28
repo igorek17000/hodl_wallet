@@ -67,6 +67,9 @@ class _getBlockChainWidgetState extends State<getBlockChainWidget> {
                                     widget.priceWithCurrency,
                                     style: TextStyle(fontSize: 15),
                                   ),
+                                  SizedBox(
+                                    width: 5,
+                                  ),
                                   Text(
                                     formatMoney(widget.cryptoChange) + '%',
                                     style: TextStyle(
