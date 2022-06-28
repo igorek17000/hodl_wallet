@@ -79,11 +79,13 @@ class _setCurrencyState extends State<setCurrency> {
                   height: 30,
                 ),
                 FutureBuilder(future: () async {
+                  print('debugging');
                   var pref = await SharedPreferences.getInstance();
                   var defaultCurrency =
                       pref.getString('defaultCurrency') == null
                           ? 'USD'
                           : pref.getString('defaultCurrency');
+
                   var currencyList = await getCurrencyJson();
                   return {
                     'defaultCurrency': defaultCurrency,
@@ -99,9 +101,21 @@ class _setCurrencyState extends State<setCurrency> {
                       currencyWidget.add(InkWell(
                         onTap: () async {
                           var pref = await SharedPreferences.getInstance();
-                          await pref.setString('defaultCurrency',
-                              currency.toString().toLowerCase());
-                          setState(() {});
+                          var responseBody = jsonDecode((await get(Uri.parse(
+                                  'https://api.coingecko.com/api/v3/simple/supported_vs_currencies')))
+                              .body) as List;
+
+                          if (responseBody
+                              .contains(currency.toString().toLowerCase())) {
+                            pref.setString('defaultCurrency', currency);
+                            Navigator.pop(context);
+                            setState(() {});
+                          } else {
+                            _scaffoldKey.currentState.showSnackBar(SnackBar(
+                              content: Text('${currency} is not supported yet'),
+                              duration: Duration(seconds: 2),
+                            ));
+                          }
                         },
                         child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,

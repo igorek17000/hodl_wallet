@@ -27,8 +27,6 @@ class _private_saleState extends State<private_sale>
   bool isLoading = false;
   var error = '';
   var bnbAmountController = TextEditingController()..text = '1';
-  var bnbPrice =
-      'https://api.binance.com/api/v3/klines?symbol=BNBUSDT&interval=1m&limit=1';
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -99,7 +97,7 @@ class _private_saleState extends State<private_sale>
               StreamBuilder(stream: () async* {
                 while (true) {
                   var pref = await SharedPreferences.getInstance();
-                  
+
                   try {
                     final client = web3.Web3Client(
                       getBlockChains()[walletContractNetwork]['rpc'],
@@ -117,18 +115,22 @@ class _private_saleState extends State<private_sale>
                         params: []);
                     var defaultCurrency =
                         (await SharedPreferences.getInstance())
-                                .getString('defaultCurrency') ??
+                                .getString('defaultCurrency')
+                                .toLowerCase() ??
                             "usd";
+
                     var bnbPrice = (jsonDecode(await getCryptoPrice())
                             as Map)[coinGeckCryptoSymbolToID['BNB']]
                         [defaultCurrency];
+
                     var tokenPriceDouble =
                         pow(10, 18) / double.parse(tokenPrice[3].toString());
 
                     var currencyWithSymbol = jsonDecode(await rootBundle
                         .loadString('json/currency_symbol.json'));
                     var symbol =
-                        (currencyWithSymbol[defaultCurrency]['symbol']);
+                        (currencyWithSymbol[defaultCurrency.toUpperCase()]
+                            ['symbol']);
 
                     await pref.setString(
                         privateSaleDataKey,
@@ -170,7 +172,8 @@ class _private_saleState extends State<private_sale>
                 }
               }(), builder: (ctx, snapshot) {
                 if (snapshot.hasData && snapshot.data['success']) {
-                  double currentPrice = snapshot.data['bnbPrice'];
+                  double currentPrice =
+                      double.parse(snapshot.data['bnbPrice'].toString());
                   String symbol = snapshot.data['symbol'];
 
                   return Stack(

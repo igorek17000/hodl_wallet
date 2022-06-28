@@ -549,7 +549,6 @@ Future<String> getCryptoPrice() async {
             'https://api.coingecko.com/api/v3/simple/price?ids=${allCrypto}&vs_currencies=${defaultCurrency}&include_24hr_change=true')))
         .body;
 
-    print(responseBody);
 
     await storedKey.setString('cryptoPrices', responseBody);
     return responseBody;
