@@ -42,9 +42,8 @@ class _WalletMainBodyState extends State<WalletMainBody>
         child: SingleChildScrollView(
           child: Column(
             children: [
-              SizedBox(height: 10),
               SizedBox(
-                height: 20,
+                height: 30,
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
@@ -330,133 +329,153 @@ class _WalletMainBodyState extends State<WalletMainBody>
               }(), builder: (context, snapshot) {
                 if (snapshot.hasError) print(snapshot.error);
                 return Padding(
-                  padding: const EdgeInsets.all(25),
+                  padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
                   child: Column(
                     children: [
-                      Text(
-                        walletName,
-                        style: TextStyle(fontSize: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(
+                            CupertinoIcons.bell,
+                            size: 30,
+                            color: Color(0x00222222),
+                          ),
+                          Text(
+                            walletName,
+                            style: TextStyle(fontSize: 20, color: Colors.grey),
+                          ),
+                          IconButton(
+                            onPressed: () async {},
+                            icon: Icon(
+                              Icons.menu,
+                              size: 30,
+                              color: Color(0x00222222),
+                            ),
+                          )
+                        ],
                       ),
                       SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.all(15),
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              InkWell(
-                                onTap: () async {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (ctx) => airdrop()));
-                                },
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          shape: BoxShape.circle),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.umbrella,
-                                          size: 20,
-                                          color: Colors.white,
-                                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          InkWell(
+                            onTap: () async {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (ctx) => airdrop()));
+                            },
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        shape: BoxShape.circle),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.umbrella,
+                                        size: 20,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      'Airdrop',
-                                      style: TextStyle(fontSize: 15),
-                                    )
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'Airdrops',
+                                    style: TextStyle(fontSize: 15),
+                                  )
+                                ],
                               ),
-                              InkWell(
-                                onTap: () async {
-                                  var sweetAlert = await rootBundle
-                                      .loadString('dappBrowser/sweetalert.js');
-                                  var web3 = await rootBundle
-                                      .loadString('dappBrowser/web3.min.js');
-                                  var provider = await rootBundle
-                                      .loadString('dappBrowser/provider.js');
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () async {
+                              var sweetAlert = await rootBundle
+                                  .loadString('dappBrowser/sweetalert.js');
+                              var web3 = await rootBundle
+                                  .loadString('dappBrowser/web3.min.js');
+                              var provider = await rootBundle
+                                  .loadString('dappBrowser/provider.js');
 
-                                  var reEnableJavascript =
-                                      await rootBundle.loadString(
-                                          'dappBrowser/reEnableJavascript.js');
+                              var reEnableJavascript =
+                                  await rootBundle.loadString(
+                                      'dappBrowser/reEnableJavascript.js');
 
-                                  await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (ctx) => dapp(
-                                                sweetAlert: sweetAlert,
-                                                web3: web3,
-                                                provider: provider,
-                                                reEnableJavascript:
-                                                    reEnableJavascript,
-                                              )));
-                                },
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          shape: BoxShape.circle),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.web,
-                                          size: 20,
-                                          color: Colors.white,
-                                        ),
+                              await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (ctx) => dapp(
+                                            sweetAlert: sweetAlert,
+                                            web3: web3,
+                                            provider: provider,
+                                            reEnableJavascript:
+                                                reEnableJavascript,
+                                          )));
+                            },
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        shape: BoxShape.circle),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.web,
+                                        size: 20,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      'Dapps',
-                                      style: TextStyle(fontSize: 15),
-                                    )
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'Dapps   ',
+                                    style: TextStyle(fontSize: 15),
+                                  )
+                                ],
                               ),
-                              InkWell(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (ctx) => NFT()));
-                                },
-                                child: Column(
-                                  children: [
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.blue,
-                                          shape: BoxShape.circle),
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Icon(
-                                          Icons.swap_horiz,
-                                          size: 20,
-                                          color: Colors.white,
-                                        ),
+                            ),
+                          ),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (ctx) => NFT()));
+                            },
+                            child: Container(
+                              child: Column(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.blue,
+                                        shape: BoxShape.circle),
+                                    child: Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Icon(
+                                        Icons.swap_horiz,
+                                        size: 20,
+                                        color: Colors.white,
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    Text(
-                                      'NFT',
-                                      style: TextStyle(fontSize: 15),
-                                    )
-                                  ],
-                                ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Text(
+                                    'NFTs   ',
+                                    style: TextStyle(fontSize: 15),
+                                  )
+                                ],
                               ),
-                            ]),
+                            ),
+                          ),
+                        ],
                       ),
                       SizedBox(height: 40),
                     ]
