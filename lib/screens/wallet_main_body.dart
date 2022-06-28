@@ -517,7 +517,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                           appTokenDetails = {
                             'name': name,
                             'symbol': symbol,
-                            'balance': '***',
+                            'balance': '',
                             'contractAddress': tokenContractAddress,
                             'network': walletContractNetwork,
                             'rpc': getBlockChains()[walletContractNetwork]
@@ -542,7 +542,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                           elementList.add({
                             'name': element['name'],
                             'symbol': element['symbol'],
-                            'balance': '***',
+                            'balance': '',
                             'contractAddress': element['contractAddress'],
                             'network': element['network'],
                             'chainId': element['chainId'],
@@ -551,7 +551,10 @@ class _WalletMainBodyState extends State<WalletMainBody>
                           });
                         }
 
-                        return elementList;
+                        return {
+                          'elementList': elementList,
+                          'symbol': snapshot.data['symbol']
+                        };
                       }(), builder: (ctx, snapshot) {
                         if (snapshot.hasError) {
                           print(snapshot.error);
@@ -561,102 +564,55 @@ class _WalletMainBodyState extends State<WalletMainBody>
                         if (snapshot.hasData) {
                           var customTokensWidget = <Widget>[];
 
-                          (snapshot.data as List).forEach((element) {
+                          (snapshot.data['elementList'] as List)
+                              .forEach((element) {
                             customTokensWidget.add(InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (ctx) => Token(data: {
-                                              'name': element['name'],
-                                              'symbol': element['symbol'],
-                                              'noPrice': true,
-                                              'contractAddress':
-                                                  element['contractAddress'],
-                                              'network': element['network'],
-                                              'chainId': element['chainId'],
-                                              'rpc': element['rpc'],
-                                              'block explorer':
-                                                  element['block explorer'],
-                                            })));
-                              },
-                              child: Column(
-                                children: [
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Flexible(
-                                          child: Row(
-                                            children: [
-                                              CircleAvatar(
-                                                radius: 20,
-                                                backgroundColor: Colors.white,
-                                                child: element['image'] != null
-                                                    ? null
-                                                    : Text(element['symbol']),
-                                                backgroundImage:
-                                                    element['image'] != null
-                                                        ? AssetImage(
-                                                            element['image'])
-                                                        : null,
-                                              ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              Flexible(
-                                                child: Text(
-                                                  element['name'],
-                                                  style: TextStyle(
-                                                      fontSize: 16,
-                                                      fontWeight:
-                                                          FontWeight.w500),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        Flexible(
-                                          child:
-                                              StreamBuilder(stream: () async* {
-                                            while (true) {
-                                              yield (await getERC20TokenBalance(
-                                                  element));
-                                              await Future.delayed(
-                                                  Duration(minutes: 1));
-                                            }
-                                          }(), builder: (context, snapshot) {
-                                            return Text(
-                                              '${snapshot.hasData ? formatMoney(snapshot.data) : element['balance']} ${element['symbol']}',
-                                              style: TextStyle(
-                                                  fontSize: 16,
-                                                  fontWeight: FontWeight.w500),
-                                              overflow: TextOverflow.ellipsis,
-                                            );
-                                          }),
-                                        ),
-                                      ]),
-                                  Row(children: [
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                    SizedBox(
-                                      height: 15,
-                                    ),
-                                  ]),
-                                  Row(children: [
-                                    Text(
-                                      '',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                    Text(''),
-                                  ]),
-                                  Divider()
-                                ],
-                              ),
-                            ));
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (ctx) => Token(data: {
+                                                'name': element['name'],
+                                                'symbol': element['symbol'],
+                                                'noPrice': true,
+                                                'contractAddress':
+                                                    element['contractAddress'],
+                                                'network': element['network'],
+                                                'chainId': element['chainId'],
+                                                'rpc': element['rpc'],
+                                                'block explorer':
+                                                    element['block explorer'],
+                                              })));
+                                },
+                                child: getBlockChainWidget(
+                                  name: element['name'],
+                                  image: element['image'] != null
+                                      ? AssetImage(element['image'])
+                                      : null,
+                                  priceWithCurrency:
+                                      snapshot.data['symbol'] + '0',
+                                  cryptoChange: 0,
+                                  symbol: element['symbol'],
+                                  cryptoAmount: StreamBuilder(
+                                    stream: () async* {
+                                      yield (await getERC20TokenBalance(
+                                          element));
+                                    }(),
+                                    builder: (ctx, snapshot) {
+                                      return Text(
+                                        '${snapshot.hasData ? formatMoney(snapshot.data) : element['balance']} ${element['symbol']}',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 16,
+                                            overflow: TextOverflow.ellipsis),
+                                      );
+                                    },
+                                  ),
+                                )));
+
+                            customTokensWidget.add(
+                              Divider(),
+                            );
                           });
                           return Column(
                             children: customTokensWidget,
