@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:bip39/bip39.dart' as bip39;
 import 'package:bitcoin_flutter/bitcoin_flutter.dart';
+import 'package:cryptowallet/screens/dapp.dart';
 import 'package:cryptowallet/screens/private_sale.dart';
 import 'package:cryptowallet/screens/receiveToken.dart';
 import 'package:cryptowallet/screens/sendToken.dart';
@@ -71,7 +72,43 @@ class _TokenState extends State<Token> {
                       ),
                       GestureDetector(
                         onTap: () async {
-                          await launch(buyCryptoLink);
+                          var address = "";
+                          if (widget.data['default'] != null) {
+                            var seedPhrase =
+                                (await SharedPreferences.getInstance())
+                                    .getString('mmemomic');
+                            if (widget.data['default'] == 'BTC') {
+                              address = (await getBitCoinFromMemnomic(
+                                  seedPhrase))['address'];
+                            } else if (widget.data['default'] == 'BTCTEST') {
+                              address = (await getBitCoinFromMemnomic(
+                                  seedPhrase,
+                                  istestnet: true))['address'];
+                            } else if (widget.data['default'] == 'LTC') {
+                              address = (await getLiteCoinFromMemnomic(
+                                  seedPhrase))['address'];
+                            } else if (widget.data['default'] == 'DOGE') {
+                              address = (await getDogeCoinFromMemnomic(
+                                  seedPhrase))['address'];
+                            } else {
+                              var response = await getCryptoKeys(seedPhrase);
+                              address = response['eth_wallet_address'];
+                            }
+                          }
+
+                          var moonPayCurrencyCodeValue =
+                              moonPayCurrencyCode[widget.data['symbol']];
+                          if (moonPayCurrencyCodeValue != null) {
+                            Navigator.push(context,
+                                MaterialPageRoute(builder: (ctx) {
+                              return dapp(
+                                  data: moonPayApi +
+                                      '&currencyCode=' +
+                                      moonPayCurrencyCodeValue +
+                                      '&walletAddress=' +
+                                      address);
+                            }));
+                          }
                         },
                         child: Text(
                           'BUY',

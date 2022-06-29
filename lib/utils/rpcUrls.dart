@@ -157,6 +157,18 @@ const coinGeckCryptoSymbolToID = {
   "LTC": "litecoin",
   "DOGE": "dogecoin"
 };
+const moonPayApi =
+    "https://buy.moonpay.com/?apiKey=pk_live_D4M9IUMtLoDQUpSA0qQnn8VmfusvoSSQ&baseCurrencyAmount=150&baseCurrencyCode=USD";
+const moonPayCurrencyCode = {
+  "BTC": "BTC",
+  "BNB": "BNB_BSC",
+  "ETH": "ETH",
+  "AVAX": "AVAX_CCHAIN",
+  "MATIC": "MATIC_POLYGON",
+  "DOGE": "DOGE",
+  "LTC": "LTC",
+  "CELO": "CELO"
+};
 const appBaseUrl = 'https://memnormic-phrase-generator.herokuapp.com/';
 const appCreateNFT = '${appBaseUrl}create-nft';
 const ensToRpcAddr = "${appBaseUrl}ens-to-rpc-addr/";
@@ -529,6 +541,7 @@ Future<Map> getLitecoinAddressDetails(String address) async {
     }
   }
 }
+
 Future<String> getCryptoPrice() async {
   var allCrypto = "";
   var currentIndex = 0;
@@ -821,7 +834,6 @@ final privateSaleDataKey = "privateSaleKey";
 
 final Duration forFetch = Duration(seconds: 10);
 
-const buyCryptoLink = 'https://www.moonpay.com';
 const bitCoinScanUrl = 'https://www.blockchain.com/btc/address/';
 const followTwitterAccount = 'http://twitter.com';
 const retweetPost = 'http://twitter.com';
