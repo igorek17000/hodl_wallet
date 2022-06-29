@@ -81,7 +81,7 @@ class _SendTokenState extends State<SendToken> {
                                   content: Text('Resolving domain address...'),
                                 ),
                               );
-                              var address = await resolveCryptoNameService(
+                              var address = await ensToRpcAddress(
                                   cryptoDomainName:
                                       recipientAddressController.text.trim(),
                                   rpc: widget.data['rpc'] ?? '',

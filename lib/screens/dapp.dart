@@ -76,26 +76,9 @@ class _dappState extends State<dapp> {
                   child: TextField(
                     onSubmitted: (value) async {
                       if (_controller != null) {
-                        if (value.startsWith('ipfs://')) {
-                          value = value.replaceFirst('ipfs://', '');
-                          value = 'https://ipfs.io/ipfs/$value';
-                          await _controller.loadUrl(
-                              urlRequest: URLRequest(url: Uri.parse(value)));
-                        }
-                        if (value.startsWith('https://') ||
-                            value.startsWith('http://')) {
-                          await _controller.loadUrl(
-                              urlRequest: URLRequest(url: Uri.parse(value)));
-                        } else if (isURL('http://${value}'.trim())) {
-                          await _controller.loadUrl(
-                              urlRequest: URLRequest(
-                                  url: Uri.parse('http://${value}')));
-                        } else {
-                          await _controller.loadUrl(
-                              urlRequest: URLRequest(
-                                  url: Uri.parse(
-                                      'https://www.google.com/search?q=${value}')));
-                        }
+                        Uri uri = await blockChainToHttps(value);
+                        await _controller.loadUrl(
+                            urlRequest: URLRequest(url: uri));
                       }
                     },
                     textInputAction: TextInputAction.search,

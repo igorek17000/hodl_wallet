@@ -60,8 +60,6 @@ class _WalletMainBodyState extends State<WalletMainBody>
                         var allCryptoPrice =
                             jsonDecode(await getCryptoPrice()) as Map;
 
-                        print(allCryptoPrice);
-
                         var seedPhrase = (await SharedPreferences.getInstance())
                             .getString('mmemomic');
                         var currencyWithSymbol = jsonDecode(await rootBundle
@@ -325,12 +323,10 @@ class _WalletMainBodyState extends State<WalletMainBody>
                     'blockChainsArray': blockChainsArray,
                     'defaultCurrency': defaultCurrency
                   };
-
-                  print('yes');
                   await Future.delayed(forFetch);
                 }
               }(), builder: (context, snapshot) {
-                if (snapshot.hasError) print(snapshot.error.toString() + 'ok');
+                if (snapshot.hasError) print(snapshot.error.toString());
 
                 return Padding(
                   padding: const EdgeInsets.fromLTRB(25, 0, 25, 0),
