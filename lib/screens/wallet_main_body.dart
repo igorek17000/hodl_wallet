@@ -462,6 +462,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                     ]
                       ..addAll(blockChainsArray)
                       ..add(FutureBuilder(future: () async {
+                        getContractAddressPrice();
                         var sharedPrefToken =
                             (await SharedPreferences.getInstance())
                                 .getString('customTokenList');

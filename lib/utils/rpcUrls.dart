@@ -530,6 +530,55 @@ Future<Map> getLitecoinAddressDetails(String address) async {
   }
 }
 
+Future<String> getContractAddressPrice() async {
+  try {
+    var storedKey = await SharedPreferences.getInstance();
+    String defaultCurrency = storedKey.getString('defaultCurrency') ?? "usd";
+    var sharedPrefToken = storedKey.getString('customTokenList');
+
+    var customTokenList;
+    var contractIds = coinGeckCryptoSymbolToID[
+            getBlockChains()[walletContractNetwork]['symbol'].toString()] +
+        ",";
+
+    var contractAddrs = tokenContractAddress + ",";
+    if (sharedPrefToken == null) {
+      customTokenList = [];
+    } else {
+      customTokenList = jsonDecode(sharedPrefToken);
+    }
+    var currentIndex = 0;
+
+    for (var element in (customTokenList as List)) {
+      if (currentIndex == customTokenList.length - 1) {
+        contractAddrs += element['contractAddress'];
+        contractIds += coinGeckCryptoSymbolToID[
+            getBlockChains()[element['network']]['symbol'].toString()];
+      } else {
+        contractAddrs += element['contractAddress'] + ",";
+        contractIds += coinGeckCryptoSymbolToID[
+                getBlockChains()[element['network']]['symbol'].toString()] +
+            ",";
+      }
+      currentIndex++;
+    }
+    String contractPriceData =
+        "https://api.coingecko.com/api/v3/simple/token_price/" +
+            contractIds.toString() +
+            "?contract_addresses=" +
+            contractAddrs.toString() +
+            "&vs_currencies=" +
+            defaultCurrency +
+            "&include_24hr_change=true";
+
+    print(contractPriceData);
+
+    var responseBody = (await get(Uri.parse(contractPriceData))).body;
+
+    print(responseBody);
+  } catch (e) {}
+}
+
 Future<String> getCryptoPrice() async {
   var allCrypto = "";
   var currentIndex = 0;
