@@ -609,7 +609,7 @@ class _WalletMainBodyState extends State<WalletMainBody>
                                     }(),
                                     builder: (ctx, snapshot) {
                                       return Text(
-                                        '${snapshot.hasData ? formatMoney(snapshot.data) : element['balance']} ${element['symbol']}',
+                                        '${snapshot.hasData ? formatMoney(snapshot.data, isBalance: true) : element['balance']} ${element['symbol']}',
                                         style: TextStyle(
                                             fontWeight: FontWeight.w500,
                                             fontSize: 16,

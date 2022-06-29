@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cryptowallet/screens/dapp.dart';
 import 'package:cryptowallet/utils/format_money.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:flutter/material.dart';
@@ -502,7 +503,11 @@ class _private_saleState extends State<private_sale>
                                         isLoading = true;
                                       });
                                       try {
-                                        await launch(private_saleBscScan);
+                                        Navigator.push(context,
+                                            MaterialPageRoute(builder: (ctx) {
+                                          return dapp(
+                                              data: private_saleBscScan);
+                                        }));
                                       } catch (e) {}
                                       setState(() {
                                         isLoading = false;

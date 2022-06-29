@@ -112,7 +112,14 @@ class _TokenState extends State<Token> {
                         },
                         child: Text(
                           'BUY',
-                          style: TextStyle(fontSize: 18),
+                          style: TextStyle(
+                              fontSize: 18,
+                              color: widget.data['default'] != null &&
+                                      moonPayCurrencyCode[
+                                              widget.data['default']] !=
+                                          null
+                                  ? null
+                                  : Color(0x00aaaaaa)),
                         ),
                       ),
                     ],
@@ -406,8 +413,13 @@ class _TokenState extends State<Token> {
                         listTransactions.addAll([
                           InkWell(
                             onTap: () async {
-                              await launch(
-                                  '${widget.data['block explorer']}/tx/${datum['transactionHash']}');
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (ctx) {
+                                return dapp(
+                                  data:
+                                      '${widget.data['block explorer']}/tx/${datum['transactionHash']}',
+                                );
+                              }));
                             },
                             child: Container(
                               child: Column(

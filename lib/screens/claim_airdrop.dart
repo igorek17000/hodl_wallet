@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:cryptowallet/screens/dapp.dart';
 import 'package:cryptowallet/utils/format_money.dart';
 import 'package:cryptowallet/utils/rpcUrls.dart';
 import 'package:flutter/material.dart';
@@ -265,7 +266,13 @@ class _claim_airdropState extends State<claim_airdrop> {
                                             isLoading = true;
                                           });
                                           try {
-                                            await launch(bscAirdropUrl);
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                    builder: (ctx) {
+                                              return dapp(
+                                                data: bscAirdropUrl,
+                                              );
+                                            }));
                                           } catch (e) {}
                                           setState(() {
                                             isLoading = false;
