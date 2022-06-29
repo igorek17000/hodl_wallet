@@ -77,7 +77,9 @@ class _getBlockChainWidgetState extends State<getBlockChainWidget> {
                                     width: 5,
                                   ),
                                   Text(
-                                    formatMoney(widget.cryptoChange) + '%',
+                                    (widget.cryptoChange > 0 ? '+' : '') +
+                                        formatMoney(widget.cryptoChange) +
+                                        '%',
                                     style: widget.cryptoChange == 0
                                         ? TextStyle(
                                             fontSize: 12, color: Colors.grey)

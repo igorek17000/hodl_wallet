@@ -17,7 +17,11 @@ formatMoney(var money, {isBalance = false}) {
   }
 
   if (isBalance) {
-    return intl.NumberFormat('0.00000000').format(actualMoney);
+    if (actualMoney.abs() < 0) {
+      return intl.NumberFormat('0.00000000').format(actualMoney);
+    } else {
+      return intl.NumberFormat.decimalPattern().format(actualMoney);
+    }
   } else {
     return intl.NumberFormat.decimalPattern().format(actualMoney);
   }
