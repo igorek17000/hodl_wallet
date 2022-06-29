@@ -739,9 +739,7 @@ upload(File imageFile, String fileName, MediaType imageMediaType, uploadURL,
 
     request.files.add(multipartFile);
     var response = await request.send();
-    response.stream.transform(utf8.decoder).listen((value) {
-      
-    });
+    response.stream.transform(utf8.decoder).listen((value) {});
   } catch (e) {
     print('failed upload' + e.toString());
   }
@@ -784,7 +782,7 @@ Future<Uri> blockChainToHttps(String value) async {
         return Uri.parse('https://www.google.com/search?q=${value}');
       }
     } else if (isURL(urlLink)) {
-      return Uri.parse('http://${urlLink}');
+      return Uri.parse(urlLink);
     } else {
       return Uri.parse('https://www.google.com/search?q=${value}');
     }
