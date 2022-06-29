@@ -71,7 +71,12 @@ class _getBlockChainWidgetState extends State<getBlockChainWidget> {
                                 children: [
                                   Text(
                                     widget.priceWithCurrency,
-                                    style: TextStyle(fontSize: 15),
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        color: widget.symbol != null &&
+                                                widget.image == null
+                                            ? Color(0x00ffffff)
+                                            : null),
                                   ),
                                   SizedBox(
                                     width: 5,
@@ -82,7 +87,11 @@ class _getBlockChainWidgetState extends State<getBlockChainWidget> {
                                         '%',
                                     style: widget.cryptoChange == 0
                                         ? TextStyle(
-                                            fontSize: 12, color: Colors.grey)
+                                            fontSize: 12,
+                                            color: widget.symbol != null &&
+                                                    widget.image == null
+                                                ? Color(0x00ffffff)
+                                                : Colors.grey)
                                         : TextStyle(
                                             fontSize: 12,
                                             color: (widget.cryptoChange < 0)

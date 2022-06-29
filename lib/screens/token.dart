@@ -93,7 +93,11 @@ class _TokenState extends State<Token> {
                       widget.data['noPrice'] != null
                           ? Text(
                               '\$0',
-                              style: TextStyle(fontSize: 18),
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color: widget.data['contractAddress'] != null
+                                      ? Color(0x00ffffff)
+                                      : null),
                             )
                           : StreamBuilder(
                               stream: () async* {
